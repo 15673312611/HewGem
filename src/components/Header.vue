@@ -22,7 +22,7 @@ const userInfo = ref(null)
 
 const getUserInfo = async () => {
   try {
-    const res = await axios.get('/api/user/info')
+    const res = await axios.get('/api/auth/check')
     userInfo.value = res.data
   } catch (error) {
     console.error('获取用户信息失败:', error)

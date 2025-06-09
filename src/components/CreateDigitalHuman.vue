@@ -102,6 +102,8 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import { XMarkIcon, CloudArrowUpIcon } from '@heroicons/vue/24/outline'
 import request from '@/utils/request'
+import { uploadFileToOss } from '@/utils/oss'
+import { ElMessage } from 'element-plus'
 
 const props = defineProps({
   visible: {
@@ -187,27 +189,29 @@ const resetForm = () => {
 
 const handleSubmit = async () => {
   if (!uploadedFile.value) {
-    alert('请选择视频文件')
+    ElMessage.warning('请上传文件')
     return
   }
   if (!formData.value.name.trim()) {
-    alert('请输入数字人名称')
+    ElMessage.warning('请输入名称')
     return
   }
 
   try {
     isSubmitting.value = true
-    const submitFormData = new FormData()
-    submitFormData.append('file', uploadedFile.value)
-    submitFormData.append('name', formData.value.name)
-    submitFormData.append('description', formData.value.description || '')
-    submitFormData.append('uid', userStore.userId || 1)
-
-    console.log('开始提交创建数字人请求...')
-    const response = await request.post('/api/digital-human/create', submitFormData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+    // 上传文件到 OSS
+    let fileUrl = ''
+    try {
+      fileUrl = await uploadFileToOss(uploadedFile.value, 'digital-human/videos')
+    } catch (err) {
+      ElMessage.error('视频上传失败：' + err.message)
+      return
+    }
+    // 发送创建请求
+    const response = await request.post('/api/digital-human/create', {
+      fileUrl,
+      name: formData.value.name,
+      description: formData.value.description || ''
     })
 
     console.log('创建数字人响应:', response)

@@ -445,6 +445,7 @@ import { useUserStore } from '@/stores/user'
 import request from '@/utils/request'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { uploadFileToOss } from '@/utils/oss'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -587,20 +588,24 @@ const removeFile = () => {
 const handleSubmit = async () => {
   if (!canSubmit.value) return
 
-  const formData = new FormData()
-  formData.append('file', selectedFile.value)
-  formData.append('name', voiceName.value)
-  formData.append('uid', userStore.user.id)
-
-  try {
-    await request.post('/api/voice-clone/create', formData)
-    ElMessage.success('声音克隆创建成功')
-    closeUploadModal()
-    // 立即刷新列表
-    await fetchMyVoiceList()
-  } catch (error) {
-    ElMessage.error(error.message || '创建失败')
+  let fileUrl = ''
+  if (selectedFile.value) {
+    try {
+      fileUrl = await uploadFileToOss(selectedFile.value, 'voice-clone/audios')
+    } catch (err) {
+      // 处理上传失败
+      console.error('文件上传失败', err)
+      return
+    }
   }
+  await request.post('/api/voice-clone/create', {
+    name: voiceName.value,
+    fileUrl
+  })
+  ElMessage.success('声音克隆创建成功')
+  closeUploadModal()
+  // 立即刷新列表
+  await fetchMyVoiceList()
 }
 
 const fetchMyVoiceList = async () => {

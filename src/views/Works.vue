@@ -139,13 +139,15 @@ const fetchTasks = async () => {
     const userId = localStorage.getItem('userId')
     const response = await axios.get('/api/task/list', {
       params: {
-        userId: userId
+        userId: userId,
+        page: 1,
+        pageSize: 20
       },
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-    tasks.value = response.data
+    tasks.value = response.data.data || []
   } catch (error) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       // token 过期或无效，显示登录弹窗

@@ -137,6 +137,7 @@
             <!-- 操作按钮 -->
             <div class="flex items-center justify-between mt-auto space-x-2">
               <el-button 
+                v-if="task.status === '3'"
                 @click="downloadVideo(task)"
                 class="flex-1 h-11 px-0 bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0 shadow-[0_2px_8px_0_rgba(59,130,246,0.10)] hover:brightness-110 hover:shadow-[0_4px_16px_0_rgba(59,130,246,0.15)] transition-all duration-300 rounded-xl font-semibold tracking-wide relative overflow-hidden before:absolute before:inset-0 before:bg-white before:opacity-0 hover:before:opacity-5 before:transition-opacity before:duration-300"
                 :icon="Download"
@@ -241,13 +242,15 @@ const fetchTasks = async () => {
     const userId = localStorage.getItem('userId')
     const response = await axios.get('/api/task/list', {
       params: {
-        userId: userId
+        userId: userId,
+        page: 1,
+        pageSize: 20
       },
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-    tasks.value = response.data
+    tasks.value = response.data.data || []
   } catch (error) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       showLoginModal()
@@ -308,12 +311,34 @@ const handleDialogClosed = () => {
 
 // 下载视频
 const downloadVideo = (task) => {
-  const link = document.createElement('a')
-  link.href = task.resultUrl
-  link.download = `作品_${task.id}.mp4`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+  try {
+    // 显示加载提示
+    const loadingInstance = ElMessage({
+      message: '正在准备下载...',
+      type: 'info',
+      duration: 0,
+      showClose: true
+    })
+    
+    // 创建下载链接
+    const link = document.createElement('a')
+    link.href = task.resultUrl
+    link.download = `作品_${task.name || task.id}.mp4`
+    link.target = '_blank'
+    
+    // 触发下载
+    document.body.appendChild(link)
+    link.click()
+    
+    // 清理
+    document.body.removeChild(link)
+    
+    // 关闭加载提示
+    loadingInstance.close()
+    ElMessage.success('下载已开始')
+  } catch (error) {
+    ElMessage.error('下载失败：' + (error.message || '未知错误'))
+  }
 }
 
 // 删除任务

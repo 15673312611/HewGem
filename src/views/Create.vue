@@ -118,13 +118,20 @@
                 :class="{ 'border-red-500': !inputText && formSubmitted && !isAudioMode }"
               ></textarea>
               <div v-if="!inputText && formSubmitted && !isAudioMode" class="text-red-500 text-xs mt-1">请输入要转换的文本内容</div>
-              <div class="flex justify-between items-center mt-2 text-xs text-gray-500">
+              
+              <!-- 添加线路选择下拉框 -->
+              <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center">
-                  <StarIcon class="w-4 h-4 mr-1 text-yellow-500" />
-                  升级为高级会员可输入最多1200字
+                  <label class="text-sm text-gray-700 mr-2">合成线路：</label>
+                  <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">
+                    <el-option label="普通线路" value="0" />
+                    <el-option label="高级线路" value="1" />
+                  </el-select>
                 </div>
-                <div :class="{ 'text-red-500': inputText.length > 450 }">{{ inputText.length }}/450</div>
+                <div :class="{ 'text-red-500': inputText.length > 450 }" class="text-xs text-gray-500">{{ inputText.length }}/450</div>
               </div>
+              
+
             </template>
 
             <!-- 上传音频模式 -->
@@ -148,6 +155,15 @@
                 <div class="text-gray-500">{{ audioFile ? audioFile.name : '点击或拖拽音频文件到这里' }}</div>
                 <div v-if="audioFile" class="text-xs text-primary mt-2">时长：{{ audioDuration }}</div>
                 <div class="text-xs text-gray-400 mt-2">支持MP3、WAV格式，不超过20MB</div>
+              </div>
+              
+              <!-- 添加线路选择下拉框 -->
+              <div class="flex items-center mt-4">
+                <label class="text-sm text-gray-700 mr-2">合成线路：</label>
+                <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">
+                  <el-option label="普通线路" value="0" />
+                  <el-option label="高级线路" value="1" />
+                </el-select>
               </div>
             </template>
           </div>
@@ -321,6 +337,7 @@ import { useUserStore } from '@/stores/user'
 import request from '@/utils/request'
 import { useRouter, useRoute } from 'vue-router'
 import { useDigitalHumanStore } from '@/stores/digitalHuman'
+import { uploadFileToOss } from '@/utils/oss'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -346,6 +363,7 @@ const isAudioDragging = ref(false)
 const inputText = ref('')
 const videoUrl = ref('')
 const loading = ref(false)
+const selectedType = ref('0')
 
 const form = ref({
   name: '',
@@ -700,15 +718,24 @@ const handleSubmit = async () => {
 
   try {
     loading.value = true
+    // 如果上传了文件，先上传到 OSS 获取 URL
+    if (uploadFile.value) {
+      try {
+        const resourceUrl = await uploadFileToOss(uploadFile.value, 'tasks/videos')
+        videoUrl.value = resourceUrl
+      } catch (err) {
+        ElMessage.error('视频上传失败：' + err.message)
+        loading.value = false
+        return
+      } finally {
+        loading.value = false
+      }
+    }
+    
+    // 构建请求参数，只传 videoUrl
     const formData = new FormData()
     formData.append('name', form.value.name)
-    
-    // 如果有上传的文件，使用文件；否则使用视频URL
-    if (uploadFile.value) {
-      formData.append('video', uploadFile.value)
-    } else if (videoUrl.value) {
-      formData.append('videoUrl', videoUrl.value)
-    }
+    formData.append('videoUrl', videoUrl.value)
     
     if (form.value.digitalHumanId) {
       formData.append('digitalHumanId', form.value.digitalHumanId)
@@ -721,6 +748,7 @@ const handleSubmit = async () => {
       formData.append('voiceId', String(selectedVoice.value.voiceId))
     }
     formData.append('userId', localStorage.getItem('userId'))
+    formData.append('type', selectedType.value)
     
     const response = await request.post('/api/task/create', formData)
     
