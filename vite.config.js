@@ -40,10 +40,11 @@ export default defineConfig({
   server: {
     proxy: {
       '^/api/.*': {
-        target: 'http://localhost:8093/tms',
+        target: 'http://localhost:8093',
         changeOrigin: true,
         secure: false,
-        ws: true
+        ws: true,
+        rewrite: (path) => path.replace(/^\/api/, '/tms/api')
       }
     }
   }

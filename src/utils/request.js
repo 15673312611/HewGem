@@ -7,7 +7,8 @@ const whiteList = [
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/refresh',
-  '/api/auth/check'
+  '/api/auth/check',
+  '/api/subsite/public-info'
 ]
 
 // 授权秘钥，部署前需要替换为实际的授权秘钥
@@ -111,4 +112,4 @@ request.interceptors.response.use(
   }
 )
 
-export default request 
+export default request

@@ -2,10 +2,17 @@
   <div class="w-[240px] bg-white border-r border-gray-100 h-screen flex flex-col sticky top-0 shadow-sm">
     <!-- Logo -->
     <div class="h-16 flex items-center px-6 border-b border-gray-100 bg-white">
-      <div class="flex items-center space-x-3">
-        <!-- <img src="../static/images/logo1.png" alt="数字人" class="h-8 w-8" /> -->
-        <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">数字人平台</span>
-      </div>
+      <router-link to="/" class="flex items-center space-x-3 max-w-full overflow-hidden">
+        <!-- 如果有分站信息，显示分站logo；否则显示默认logo和名称 -->
+        <template v-if="subsiteInfo && subsiteInfo.logo">
+          <img :src="subsiteInfo.logo" alt="站点Logo" class="h-24 max-w-[170px] object-contain" />
+        </template>
+        
+        <!-- 默认显示 -->
+        <template v-else>
+          <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">数字人平台</span>
+        </template>
+      </router-link>
     </div>
 
     <!-- 导航菜单 -->
@@ -69,7 +76,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   HomeIcon,
@@ -77,10 +84,12 @@ import {
   VideoCameraIcon,
   UserIcon,
   MicrophoneIcon,
-  GiftIcon
+  GiftIcon,
+  DocumentTextIcon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
+const subsiteInfo = inject('subsiteInfo', ref({}))
 
 const menuItems = [
   {
@@ -97,6 +106,11 @@ const menuItems = [
     name: '我的作品',
     path: '/works',
     icon: VideoCameraIcon
+  },
+  {
+    name: 'AI文案创作',
+    path: '/ai-copywriting',
+    icon: DocumentTextIcon
   },
   {
     name: '我的数字人',

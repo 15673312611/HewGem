@@ -1,5 +1,13 @@
 <template>
   <div>
+    <!-- 移除固定公告，改用弹窗公告 -->
+    <AnnouncementDialog
+      ref="announcementDialog"
+      :announcement="announcement"
+      :enable-announcement="!!announcement"
+      :subsite-id="subsiteId || '0'"
+    />
+    
     <!-- 创作横幅 -->
     <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 mb-8">
       <div class="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -201,22 +209,69 @@ import { VideoCamera, VideoPlay, Download, Delete } from '@element-plus/icons-vu
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
 import { useLoginModal } from '@/composables/useLoginModal'
+import AnnouncementDialog from '@/components/AnnouncementDialog.vue'
+import request from '@/utils/request'
 
 const tasks = ref([])
 const router = useRouter()
 const { loginModalVisible, showLoginModal } = useLoginModal()
 const isFetchingTasks = ref(false)
+const announcement = ref('')
+const subsiteId = ref(null)
+const announcementDialog = ref(null)
 
 // 视频播放弹窗
 const videoDialogVisible = ref(false)
 const currentVideoUrl = ref('')
 const videoPlayer = ref(null)
 
+// 获取系统公告
+const fetchAnnouncement = async () => {
+  try {
+    // 检查是否在一小时内已经显示过公告
+    if (hasShownAnnouncementWithinHour()) {
+      console.log('一小时内已经显示过公告，不再显示');
+      return;
+    }
+    
+    const response = await request.get('/api/subsite/info')
+    if (response.code === 0 && response.data) {
+      announcement.value = response.data.announcement || ''
+      subsiteId.value = response.data.id || '0'
+      
+      // 获取到公告后，显示公告弹窗
+      if (announcement.value && announcementDialog.value) {
+        setTimeout(() => {
+          announcementDialog.value.showDialog()
+          // 记录显示公告的时间
+          localStorage.setItem('lastAnnouncementShownTime', Date.now().toString());
+        }, 500)
+      }
+    }
+  } catch (error) {
+    console.error('获取系统公告失败:', error)
+  }
+}
+
+// 检查是否在一小时内已经显示过公告
+const hasShownAnnouncementWithinHour = () => {
+  const lastShownTime = localStorage.getItem('lastAnnouncementShownTime');
+  if (!lastShownTime) return false;
+  
+  const oneHourInMs = 60 * 60 * 1000; // 一小时的毫秒数
+  const timeDiff = Date.now() - parseInt(lastShownTime);
+  
+  return timeDiff < oneHourInMs;
+}
+
 // 监听登录成功事件
 onMounted(() => {
   window.addEventListener('login-success', () => {
     fetchTasks()
   })
+  
+  // 获取系统公告
+  fetchAnnouncement()
 })
 
 // 监听登录弹窗关闭

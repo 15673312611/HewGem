@@ -5,6 +5,37 @@ import DigitalHuman from '@/views/DigitalHuman.vue'
 import VoiceClone from '@/views/VoiceClone.vue'
 import VoiceCreation from '@/views/VoiceCreation.vue'
 
+// 分站相关路由
+const subsiteRoutes = [
+  {
+    path: '/subsite-create',
+    name: 'SubsiteCreate',
+    component: () => import('@/views/subsite/SubsiteCreate.vue'),
+    meta: {
+      title: '创建分站',
+      requireAuth: true
+    }
+  },
+  {
+    path: '/subsite-admin',
+    name: 'SubsiteAdmin',
+    component: () => import('@/views/subsite/SubsiteAdmin.vue'),
+    meta: {
+      title: '分站管理',
+      requireAuth: true
+    }
+  },
+  {
+    path: '/subsite-users',
+    name: 'SubsiteUsers',
+    component: () => import('@/views/subsite/SubsiteUsers.vue'),
+    meta: {
+      title: '分站用户管理',
+      requireAuth: true
+    }
+  }
+]
+
 const routes = [
   {
     path: '/',
@@ -21,9 +52,44 @@ const routes = [
     }
   },
   {
+    path: '/subsite-create',
+    name: 'SubsiteCreate',
+    component: () => import('@/views/subsite/SubsiteCreate.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '开通分站'
+    }
+  },
+  {
+    path: '/subsite-admin',
+    name: 'SubsiteAdmin',
+    component: () => import('@/views/subsite/SubsiteAdmin.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '分站管理'
+    }
+  },
+  {
+    path: '/s/:domain',
+    name: 'SubsiteView',
+    component: () => import('@/views/subsite/SubsiteView.vue'),
+    meta: {
+      title: '分站首页'
+    }
+  },
+  {
     path: '/works',
     name: 'Works',
     component: () => import('@/views/Works.vue')
+  },
+  {
+    path: '/ai-copywriting',
+    name: 'AiCopywriting',
+    component: () => import('@/views/AiCopywriting.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'AI文案创作'
+    }
   },
   {
     path: '/digital-human',
@@ -66,7 +132,9 @@ const routes = [
       title: '个人中心',
       requiresAuth: true
     }
-  }
+  },
+  // 添加分站路由
+  ...subsiteRoutes
 ]
 
 const router = createRouter({

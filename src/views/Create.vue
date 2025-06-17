@@ -121,13 +121,13 @@
               
               <!-- 添加线路选择下拉框 -->
               <div class="flex items-center justify-between mt-2">
-                <div class="flex items-center">
-                  <label class="text-sm text-gray-700 mr-2">合成线路：</label>
-                  <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">
-                    <el-option label="普通线路" value="0" />
-                    <el-option label="高级线路" value="1" />
-                  </el-select>
-                </div>
+<!--                <div class="flex items-center">-->
+<!--                  <label class="text-sm text-gray-700 mr-2">合成线路：</label>-->
+<!--                  <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">-->
+<!--                    <el-option label="普通线路" value="0" />-->
+<!--                    <el-option label="高级线路" value="1" />-->
+<!--                  </el-select>-->
+<!--                </div>-->
                 <div :class="{ 'text-red-500': inputText.length > 450 }" class="text-xs text-gray-500">{{ inputText.length }}/450</div>
               </div>
               
@@ -158,13 +158,13 @@
               </div>
               
               <!-- 添加线路选择下拉框 -->
-              <div class="flex items-center mt-4">
-                <label class="text-sm text-gray-700 mr-2">合成线路：</label>
-                <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">
-                  <el-option label="普通线路" value="0" />
-                  <el-option label="高级线路" value="1" />
-                </el-select>
-              </div>
+<!--              <div class="flex items-center mt-4">-->
+<!--                <label class="text-sm text-gray-700 mr-2">合成线路：</label>-->
+<!--                <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">-->
+<!--                  <el-option label="普通线路" value="0" />-->
+<!--                  <el-option label="高级线路" value="1" />-->
+<!--                </el-select>-->
+<!--              </div>-->
             </template>
           </div>
 
@@ -742,7 +742,15 @@ const handleSubmit = async () => {
     }
     
     if (isAudioMode.value && audioFile.value) {
-      formData.append('audio', audioFile.value)
+      // 上传音频文件到OSS
+      try {
+        const audioUrl = await uploadFileToOss(audioFile.value, 'tasks/audios')
+        formData.append('audioUrl', audioUrl)
+      } catch (err) {
+        ElMessage.error('音频上传失败：' + err.message)
+        loading.value = false
+        return
+      }
     } else {
       formData.append('text', inputText.value)
       formData.append('voiceId', String(selectedVoice.value.voiceId))

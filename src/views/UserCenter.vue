@@ -228,13 +228,17 @@ const getTypeClass = (record) => {
 const fetchUserInfo = async () => {
   try {
     const res = await request.get('/api/auth/check');
-    if (res) {
-      userInfo.value = res;
+    if (res && res.user) {
+      userInfo.value = res.user;
       // 同时更新 store 中的用户信息
-      userStore.setUser(res);
+      userStore.setUser(res.user);
       // 如果用户没有邀请码，请求生成
       if (!userInfo.value.inviteCode) {
-        const inviteRes = await request.post('/api/user/generate-invite-code');
+        const inviteRes = await request.post('/api/user/generate-invite-code', null, {
+          params: {
+            userId: userInfo.value.id
+          }
+        });
         if (inviteRes.code === 200) {
           userInfo.value.inviteCode = inviteRes.data;
           userStore.setUser(userInfo.value);

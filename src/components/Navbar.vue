@@ -7,6 +7,7 @@
         
         <!-- 导航链接 -->
         <div class="flex items-center space-x-6">
+          <!-- 导航链接已移至侧边栏 -->
         </div>
       </div>
       
@@ -14,8 +15,19 @@
         <!-- 算力显示 -->
         <div v-if="isLoggedIn" class="flex items-center px-5 py-2 rounded-full bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 border border-blue-200 shadow-sm">
           <span class="text-blue-500 mr-2">⚡</span>
-          <span class="font-medium">{{ userInfo?.power || 0 }}</span>
+          <span class="font-medium">{{ userInfo.power || 0 }}</span>
         </div>
+        
+        <!-- 分站按钮 - 根据用户是否已有分站来显示不同按钮 -->
+        <router-link v-if="isLoggedIn && !hasSubsite" 
+                     to="/subsite-create" 
+                     @click="handleSubsiteCreate"
+                     class="px-5 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:shadow-md hover:from-purple-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+          开通分站
+        </router-link>
+        <router-link v-if="isLoggedIn && hasSubsite" to="/subsite-admin" class="px-5 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:shadow-md hover:from-purple-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+          分站管理
+        </router-link>
         
         <!-- 未登录状态 -->
         <button v-if="!isLoggedIn" 
@@ -25,7 +37,7 @@
         </button>
         
         <button v-if="!isLoggedIn" 
-                @click="showRegisterModal()"
+                @click="showRegisterModalWithCaptcha()"
                 class="ml-2 px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full hover:shadow-md hover:from-green-600 hover:to-emerald-600 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
           注册
         </button>
@@ -37,7 +49,7 @@
             <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center text-white shadow-sm overflow-hidden">
               <UserIcon class="w-5 h-5" />
             </div>
-            <span class="text-gray-700 font-medium">{{ userInfo?.username }}</span>
+            <span class="text-gray-700 font-medium">{{ userInfo.username }}</span>
             <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -47,8 +59,8 @@
           <div v-if="showUserMenu" 
                class="user-menu absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl py-2 border border-gray-100 overflow-hidden">
             <div class="px-4 py-3 border-b border-gray-100">
-              <div class="font-semibold text-gray-900">{{ userInfo?.username }}</div>
-              <div class="text-sm text-gray-500 truncate">{{ userInfo?.email }}</div>
+              <div class="font-semibold text-gray-900">{{ userInfo.username }}</div>
+              <div class="text-sm text-gray-500 truncate">{{ userInfo.email }}</div>
             </div>
             <router-link to="/user-center" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
               <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +87,7 @@
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[480px] bg-white rounded-2xl p-8 shadow-2xl">
       <div class="flex justify-between items-center mb-8">
         <h2 class="text-2xl font-semibold text-gray-900">
-          {{ isRegister ? '创建新账号' : '数字人平台' }}
+          {{ isRegister ? '创建新账号' : (subsiteInfo && subsiteInfo.name ? subsiteInfo.name : '数字人平台') }}
         </h2>
         <button @click="hideLoginModal" class="text-gray-400 hover:text-gray-500 transition-colors">
           <XMarkIcon class="w-6 h-6" />
@@ -533,6 +545,8 @@ const userInfo = inject('userInfo')
 const router = useRouter()
 const showAgreement = ref(false)
 const agreedToTerms = ref(false)
+const hasSubsite = ref(false)
+const subsiteInfo = inject('subsiteInfo', ref({}))
 
 const form = ref({
   username: '',
@@ -575,6 +589,12 @@ const validateUsername = () => {
     errors.value.username = '请输入账号'
   } else if (form.value.username.length < 5) {
     errors.value.username = '账号至少需要5个字符'
+  } else if (/[\u4e00-\u9fa5]/.test(form.value.username)) {
+    // 检查是否包含汉字
+    errors.value.username = '账号不能包含汉字'
+  } else if (!/^[a-zA-Z0-9_\-\.]+$/.test(form.value.username)) {
+    // 只允许英文字母、数字、下划线、连字符和点
+    errors.value.username = '账号只能包含英文字母、数字、下划线、连字符和点'
   } else {
     errors.value.username = ''
   }
@@ -677,6 +697,11 @@ const toggleRegister = () => {
   }
   globalError.value = ''
   agreedToTerms.value = false
+  
+  // 如果切换到注册模式，立即加载验证码
+  if (isRegister.value) {
+    refreshCaptcha()
+  }
 }
 
 const handleSubmit = async () => {
@@ -725,8 +750,14 @@ const handleSubmit = async () => {
         // 保存token和用户信息
         userStore.setToken(response.data.token);
         userStore.setUser(response.data.user);
-        // 更新全局用户信息
-        userInfo.value = response.data.user;
+        // 确保分站信息也被正确存储
+        if (response.data.subsite) {
+          userStore.setSubsite(response.data.subsite);
+        }
+        
+        // 不再需要手动更新 userInfo，它会自动跟随 userStore.user 的变化
+        // userInfo.value = response.data.user;
+        
         // 关闭注册弹窗
         hideLoginModal();
         // 重置表单
@@ -759,11 +790,54 @@ const handleSubmit = async () => {
 
       if (response.data) {
         ElMessage.success('登录成功');
+        console.log('登录成功，准备设置用户信息', response.data);
+        
         // 保存token和用户信息
         userStore.setToken(response.data.token);
         userStore.setUser(response.data.user);
-        // 更新全局用户信息
-        userInfo.value = response.data.user;
+        
+        // 确保分站信息也被正确存储
+        if (response.data.subsite) {
+          console.log('登录响应中包含分站信息', response.data.subsite);
+          userStore.setSubsite(response.data.subsite);
+        }
+        
+        // 检查当前是否在分站域名下
+        const hostname = window.location.hostname;
+        const path = window.location.pathname;
+        
+        // 检查是否是分站域名格式（subdomain.cutb.cn）或者分站路径格式（/subsite/xxx）
+        if (hostname.includes('.cutb.cn') || path.includes('/subsite/')) {
+          let domain = null;
+          
+          // 从域名或路径中提取分站域名
+          if (hostname.includes('.cutb.cn')) {
+            domain = hostname.split('.')[0];
+          } else if (path.includes('/subsite/')) {
+            const matches = path.match(/\/subsite\/([^\/]+)/);
+            if (matches && matches[1]) {
+              domain = matches[1];
+            }
+          }
+          
+          // 如果找到域名，获取分站信息
+          if (domain) {
+            console.log('检测到分站域名', domain);
+            try {
+              // 获取分站信息
+              const subsiteResponse = await axios.get(`/api/subsite/info-by-domain/${domain}`);
+              if (subsiteResponse.data.code === 0 && subsiteResponse.data.data) {
+                const subsiteInfo = subsiteResponse.data.data;
+                console.log('获取到分站信息', subsiteInfo);
+                // 更新store中的分站信息，确保公告能够正确显示
+                userStore.setSubsite(subsiteInfo);
+              }
+            } catch (error) {
+              console.error('获取分站信息失败:', error);
+            }
+          }
+        }
+        
         // 关闭登录弹窗
         hideLoginModal();
         // 重置表单
@@ -773,7 +847,9 @@ const handleSubmit = async () => {
           email: '',
           captcha: ''
         };
+        
         // 触发登录成功事件
+        console.log('触发登录成功事件');
         window.dispatchEvent(new CustomEvent('login-success'));
       }
     }
@@ -841,19 +917,21 @@ watch(() => router.currentRoute.value, () => {
 
 // 组件挂载时添加事件监听
 onMounted(() => {
+  if (isRegister.value) {
+    refreshCaptcha()
+  }
+  
+  // 点击其他地方关闭用户菜单
   document.addEventListener('click', handleClickOutside)
-  window.addEventListener('user-info-updated', () => {
-    if (userInfo.value) {
-      userStore.updateUserInfo()
-    }
-  })
-  refreshCaptcha()
 })
 
-// 组件卸载时移除事件监听
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
-  window.removeEventListener('user-info-updated', () => {})
+  window.removeEventListener('user-info-updated', async () => {
+    if (userStore.isLoggedIn) {
+      await checkUserSubsite()
+    }
+  })
 })
 
 // 添加注册处理方法
@@ -901,8 +979,14 @@ const handleRegister = async () => {
       // 保存token和用户信息
       userStore.setToken(response.data.token);
       userStore.setUser(response.data.user);
-      // 更新全局用户信息
-      userInfo.value = response.data.user;
+      // 确保分站信息也被正确存储
+      if (response.data.subsite) {
+        userStore.setSubsite(response.data.subsite);
+      }
+      
+      // 不再需要手动更新 userInfo，它会自动跟随 userStore.user 的变化
+      // userInfo.value = response.data.user;
+      
       // 关闭注册弹窗
       hideRegisterModal();
       // 重置表单
@@ -928,6 +1012,70 @@ const handleRegister = async () => {
     isLoading.value = false;
   }
 };
+
+// 检查用户是否已有分站
+const checkUserSubsite = async () => {
+  if (!userStore.isLoggedIn) return
+  
+  try {
+    const response = await fetch('/api/subsite/info', {
+      headers: {
+        'Authorization': `Bearer ${userStore.token}`
+      }
+    })
+    const data = await response.json()
+    
+    if (response.ok && data.code === 0 && data.data) {
+      hasSubsite.value = true
+    } else {
+      hasSubsite.value = false
+    }
+  } catch (error) {
+    console.error('检查分站信息失败:', error)
+    hasSubsite.value = false
+  }
+}
+
+// 监听登录状态变化，更新分站状态
+watch(() => userStore.isLoggedIn, async (newValue) => {
+  if (newValue) {
+    await checkUserSubsite()
+  } else {
+    hasSubsite.value = false
+  }
+})
+
+// 组件挂载时检查分站状态
+onMounted(async () => {
+  if (userStore.isLoggedIn) {
+    await checkUserSubsite()
+  }
+  
+  // 监听用户信息更新事件
+  window.addEventListener('user-info-updated', async () => {
+    if (userStore.isLoggedIn) {
+      await checkUserSubsite()
+    }
+  })
+})
+
+// 重写showRegisterModal方法，在显示注册弹窗时立即加载验证码
+const originalShowRegisterModal = showRegisterModal
+const enhancedShowRegisterModal = () => {
+  originalShowRegisterModal()
+  // 立即加载验证码
+  setTimeout(() => {
+    refreshCaptcha()
+  }, 100) // 添加小延迟确保DOM已更新
+}
+// 替换原始方法
+const showRegisterModalWithCaptcha = enhancedShowRegisterModal
+
+// 处理开通分站按钮点击事件
+const handleSubsiteCreate = () => {
+  // 这里可以添加一些逻辑，确保不会触发公告弹窗
+  console.log('开通分站按钮被点击')
+}
 </script>
 
 <style scoped>
