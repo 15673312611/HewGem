@@ -3,14 +3,12 @@
     <!-- Logo -->
     <div class="h-16 flex items-center px-6 border-b border-gray-100 bg-white">
       <router-link to="/" class="flex items-center space-x-3 max-w-full overflow-hidden">
-        <!-- 如果有分站信息，显示分站logo；否则显示默认logo和名称 -->
-        <template v-if="subsiteInfo && subsiteInfo.logo">
-          <img :src="subsiteInfo.logo" alt="站点Logo" class="h-24 max-w-[170px] object-contain" />
+        <!-- 统一使用 siteLogo 和 siteName -->
+        <template v-if="userStore.siteLogo">
+          <img :src="userStore.siteLogo" alt="站点Logo" class="h-12 max-w-[170px] object-contain" />
         </template>
-        
-        <!-- 默认显示 -->
         <template v-else>
-          <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">数字人平台</span>
+          <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">{{ userStore.siteName }}</span>
         </template>
       </router-link>
     </div>
@@ -78,6 +76,7 @@
 <script setup>
 import { computed, ref, inject } from 'vue'
 import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import {
   HomeIcon,
   SquaresPlusIcon,
@@ -89,7 +88,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
-const subsiteInfo = inject('subsiteInfo', ref({}))
+const userStore = useUserStore()
 
 const menuItems = [
   {

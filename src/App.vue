@@ -25,11 +25,9 @@
   </div>
   <InviteDialog />
   <AnnouncementDialog
-    v-if="userStore.subsite && userStore.subsite.id"
+    v-if="userStore.isAnnouncementEnabled"
     ref="announcementDialogRef"
-    :announcement="userStore.subsite.announcement"
-    :enable-announcement="userStore.subsite.enableAnnouncement !== false"
-    :subsite-id="userStore.subsite.id"
+    :announcement="userStore.announcement"
   />
 </template>
 
@@ -55,9 +53,6 @@ const { showLoginModal } = useLoginModal()
 const { registerModalVisible, showRegisterModal, hideRegisterModal } = useRegisterModal()
 const announcementDialogRef = ref(null)
 
-const subsiteInfo = ref({})
-provide('subsiteInfo', subsiteInfo)
-
 const showGlobalMessage = (text, type = 'success', duration = 2000) => {
   messageText.value = text
   messageType.value = type
@@ -71,35 +66,15 @@ provide('showGlobalMessage', showGlobalMessage)
 // 通过 computed 提供响应式的 userInfo
 provide('userInfo', computed(() => userStore.user))
 
-watch(() => userStore.subsite, (loginSubsite) => {
-  if (loginSubsite && loginSubsite.id) {
-    subsiteInfo.value = loginSubsite
-  }
-}, { deep: true, immediate: true })
-
-const fetchPublicSubsiteInfo = async () => {
-  // 如果用户已经登录并获取了分站信息，则不再请求公共接口
-  if (subsiteInfo.value && subsiteInfo.value.id) return
-
-  try {
-    // 直接请求接口，后端会根据域名判断分站
-    const response = await axios.get('/api/subsite/public-info')
-    if (response?.data?.code === 0 && response.data.data) {
-      subsiteInfo.value = response.data.data
-    }
-  } catch (error) {
-    console.error('Error fetching public subsite info in App.vue', error)
-  }
-}
-
 const checkUserStatus = async () => {
-  if (userStore.token) {
+  // initAuth 会从 localStorage 加载，updateUserInfo 会从服务器更新
+  if (userStore.initAuth()) {
     await userStore.updateUserInfo()
   }
 }
 
-watch(() => userStore.subsite, (newSubsite) => {
-  if (newSubsite && newSubsite.id && announcementDialogRef.value) {
+watch(() => userStore.isAnnouncementEnabled, (isEnabled) => {
+  if (isEnabled && announcementDialogRef.value) {
     // 检查是否是从路由跳转到分站创建页面
     if (route.path === '/subsite-create') {
       return; // 如果是跳转到分站创建页面，不显示公告
@@ -127,24 +102,26 @@ const handleLoginSuccess = () => {
   setTimeout(() => {
     console.log('延迟后检查分站信息', {
       subsite: userStore.subsite,
-      hasAnnouncementRef: !!announcementDialogRef.value
+      hasAnnouncementRef: !!announcementDialogRef.value,
+      isEnabled: userStore.isAnnouncementEnabled,
     });
     
-    if (userStore.subsite && userStore.subsite.id && announcementDialogRef.value) {
+    if (userStore.isAnnouncementEnabled && announcementDialogRef.value) {
       // 检查是否是从路由跳转到分站创建页面
       if (route.path === '/subsite-create') {
         console.log('当前在分站创建页面，不显示公告');
         return; // 如果是跳转到分站创建页面，不显示公告
       }
       console.log('准备显示公告', {
-        announcement: userStore.subsite.announcement,
-        enableAnnouncement: userStore.subsite.enableAnnouncement
+        announcement: userStore.announcement,
+        enableAnnouncement: userStore.isAnnouncementEnabled
       });
       announcementDialogRef.value.showDialog();
     } else {
       console.log('无法显示公告', {
         hasSubsite: !!userStore.subsite,
         hasSubsiteId: userStore.subsite && userStore.subsite.id,
+        isEnabled: userStore.isAnnouncementEnabled,
         hasAnnouncementRef: !!announcementDialogRef.value
       });
     }
@@ -152,7 +129,6 @@ const handleLoginSuccess = () => {
 };
 
 onMounted(async () => {
-  await fetchPublicSubsiteInfo()
   await checkUserStatus()
   
   // 添加登录成功事件监听
