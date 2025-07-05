@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-[#F7F8FA] to-[#EEF1F6] p-6">
+  <div class="min-h-screen bg-gradient-to-b from-[#F7F8FA] to-[#EEF1F6] dark:from-dark-bg dark:to-dark-bg2 p-6">
     <div class="max-w-7xl mx-auto">
-      <h1 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8 flex items-center">
         <span class="bg-gradient-to-r from-blue-500 to-indigo-600 text-transparent bg-clip-text">AI文案创作</span>
-        <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full">智能助手</span>
+        <span class="ml-3 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-full">智能助手</span>
       </h1>
       
       <!-- 角色列表 -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- 角色卡片 -->
         <div v-for="role in roles" :key="role.id" @click="startCopywriting(role)"
-             class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden group border border-gray-100">
+             class="bg-white dark:bg-dark-card rounded-xl shadow-sm dark:shadow-dark-sm hover:shadow-lg dark:hover:shadow-dark-lg transition-all duration-300 cursor-pointer overflow-hidden group border border-gray-100 dark:border-dark-border">
           <div class="p-6 relative">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 to-transparent rounded-bl-full opacity-70"></div>
+            <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 dark:from-blue-900/20 to-transparent rounded-bl-full opacity-70"></div>
             
             <!-- 角色头像/图标 -->
             <div class="w-16 h-16 rounded-full mb-4 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md relative z-10">
@@ -21,11 +21,11 @@
             </div>
             
             <!-- 角色名称和描述 -->
-            <h3 class="text-xl font-bold mb-2 text-gray-800 group-hover:text-blue-600 transition-colors relative z-10">{{ role.name }}</h3>
-            <p class="text-gray-500 mb-6 line-clamp-2 text-sm relative z-10">{{ role.description }}</p>
+            <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">{{ role.name }}</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-6 line-clamp-2 text-sm relative z-10">{{ role.description }}</p>
             
             <!-- 开始创作按钮 -->
-            <button class="w-full py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium hover:shadow-md transition-all transform group-hover:scale-105 relative z-10">
+            <button class="w-full py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-blue-700 text-white font-medium hover:shadow-md dark:hover:shadow-dark-md transition-all transform group-hover:scale-105 relative z-10">
               开始创作
             </button>
           </div>
@@ -34,23 +34,23 @@
       
       <!-- 历史记录 -->
       <div class="mt-16">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
           <span>最近创作</span>
-          <span class="ml-3 px-2 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded-full">{{ conversations.length }}条记录</span>
+          <span class="ml-3 px-2 py-1 bg-gray-100 dark:bg-dark-card2 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full">{{ conversations.length }}条记录</span>
         </h2>
         
-        <div v-if="conversations.length > 0" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <div class="divide-y divide-gray-100">
+        <div v-if="conversations.length > 0" class="bg-white dark:bg-dark-card rounded-xl shadow-sm dark:shadow-dark-sm p-6 border border-gray-100 dark:border-dark-border">
+          <div class="divide-y divide-gray-100 dark:divide-dark-border">
             <div v-for="conversation in conversations" :key="conversation.id" 
                  @click="viewConversation(conversation)"
-                 class="py-4 flex items-center justify-between cursor-pointer hover:bg-blue-50 px-4 rounded-lg transition-colors">
+                 class="py-4 flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 px-4 rounded-lg transition-colors">
               <div class="flex items-center">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white mr-4 shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white mr-4 shadow-sm dark:shadow-dark-sm">
                   <span class="text-lg font-bold">{{ conversation.roleName.charAt(0) }}</span>
                 </div>
                 <div>
-                  <h4 class="text-gray-800 font-semibold">{{ conversation.title }}</h4>
-                  <p class="text-gray-400 text-sm flex items-center mt-1">
+                  <h4 class="text-gray-800 dark:text-gray-200 font-semibold">{{ conversation.title }}</h4>
+                  <p class="text-gray-400 dark:text-gray-500 text-sm flex items-center mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -60,10 +60,10 @@
               </div>
               <div class="flex items-center space-x-2">
                 <button @click.stop="deleteConversation(conversation.id)" 
-                        class="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50">
+                        class="p-2 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">
                   <TrashIcon class="w-5 h-5" />
                 </button>
-                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 dark:text-blue-400">
                   <ChevronRightIcon class="w-5 h-5" />
                 </div>
               </div>
@@ -71,13 +71,13 @@
           </div>
         </div>
         
-        <div v-else class="bg-white rounded-xl shadow-sm p-12 flex flex-col items-center justify-center border border-gray-100">
-          <div class="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mb-4">
+        <div v-else class="bg-white dark:bg-dark-card rounded-xl shadow-sm dark:shadow-dark-sm p-12 flex flex-col items-center justify-center border border-gray-100 dark:border-dark-border">
+          <div class="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 dark:text-blue-400 mb-4">
             <DocumentTextIcon class="w-10 h-10" />
           </div>
-          <p class="text-gray-600 font-medium">暂无创作记录</p>
-          <p class="text-gray-400 text-sm mt-2">选择一个角色开始您的AI创作之旅</p>
-          <button class="mt-6 px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg font-medium hover:shadow-md transition-all">
+          <p class="text-gray-600 dark:text-gray-300 font-medium">暂无创作记录</p>
+          <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">选择一个角色开始您的AI创作之旅</p>
+          <button class="mt-6 px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-blue-700 text-white rounded-lg font-medium hover:shadow-md dark:hover:shadow-dark-md transition-all">
             立即开始
           </button>
         </div>
@@ -96,18 +96,18 @@
     >
       <div v-if="currentRole" class="mb-6">
         <div class="flex items-center mb-6">
-          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white mr-4 shadow-sm">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-blue-700 flex items-center justify-center text-white mr-4 shadow-sm dark:shadow-dark-sm">
             <img v-if="currentRole.icon" :src="currentRole.icon" class="w-full h-full object-cover rounded-full" />
             <span v-else class="text-lg font-bold">{{ currentRole.name.charAt(0) }}</span>
           </div>
           <div>
-            <h3 class="text-xl font-bold text-gray-800">{{ currentRole.name }}</h3>
-            <p class="text-gray-500 text-sm">{{ currentRole.description }}</p>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200">{{ currentRole.name }}</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm">{{ currentRole.description }}</p>
           </div>
         </div>
         
-        <div class="mb-6 bg-gray-50 p-5 rounded-xl border border-gray-200">
-          <label class="block text-sm font-semibold text-gray-700 mb-2">输入内容</label>
+        <div class="mb-6 bg-gray-50 dark:bg-dark-card2 p-5 rounded-xl border border-gray-200 dark:border-dark-border">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">输入内容</label>
           <el-input
             v-model="userPrompt"
             type="textarea"
@@ -118,7 +118,7 @@
           
           <div class="mt-4 flex items-center justify-between">
             <div v-if="currentRole.needsWordLimit !== false" class="w-2/3">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">生成字数</label>
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">生成字数</label>
               <el-slider
                 v-model="wordLimit"
                 :min="150"
@@ -142,8 +142,8 @@
         
         <div v-if="generatedContent" class="mt-8">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-800 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               生成结果
@@ -160,7 +160,7 @@
             </div>
           </div>
           
-          <div class="bg-white p-6 rounded-xl border border-gray-200 whitespace-pre-wrap text-gray-800 shadow-sm leading-relaxed">
+          <div class="bg-white dark:bg-dark-card2 p-6 rounded-xl border border-gray-200 dark:border-dark-border whitespace-pre-wrap text-gray-800 dark:text-gray-300 shadow-sm dark:shadow-dark-sm leading-relaxed">
             {{ generatedContent }}
           </div>
         </div>
@@ -394,20 +394,24 @@ onMounted(() => {
 :deep(.el-dialog__header) {
   padding: 20px 24px;
   border-bottom: 1px solid #eee;
+  @apply dark:border-dark-border dark:bg-dark-card2;
 }
 
 :deep(.el-dialog__title) {
   font-weight: bold;
   font-size: 18px;
   color: #333;
+  @apply dark:text-gray-200;
 }
 
 :deep(.el-dialog__body) {
   padding: 24px;
+  @apply dark:bg-dark-card;
 }
 
 :deep(.el-slider__runway) {
   margin: 12px 0;
+  @apply dark:bg-dark-card3;
 }
 
 :deep(.el-slider__bar) {
@@ -416,10 +420,12 @@ onMounted(() => {
 
 :deep(.el-slider__button) {
   border-color: #3b82f6;
+  @apply dark:bg-dark-card;
 }
 
 :deep(.el-input__inner) {
   border-radius: 8px;
+  @apply dark:bg-dark-card2 dark:border-dark-border dark:text-gray-300;
 }
 
 :deep(.el-textarea__inner) {
@@ -428,6 +434,7 @@ onMounted(() => {
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
   padding: 12px;
+  @apply dark:bg-dark-card2 dark:border-dark-border dark:text-gray-300;
 }
 
 :deep(.el-textarea__inner:focus) {
@@ -440,25 +447,70 @@ onMounted(() => {
   border-radius: 8px;
   padding: 12px 24px;
   font-weight: 600;
+  @apply dark:from-blue-600 dark:to-blue-700;
 }
 
 .generate-btn:hover {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   transform: translateY(-1px);
+  @apply dark:shadow-dark-lg;
 }
 
 .copy-btn, .save-btn {
   border-radius: 6px;
   font-weight: 500;
+  @apply dark:bg-dark-card2 dark:border-dark-border dark:text-gray-300;
 }
 
 .save-btn {
   background-color: #10b981;
   border-color: #10b981;
+  @apply dark:bg-green-600 dark:border-green-600 dark:text-white;
 }
 
 .save-btn:hover {
   background-color: #059669;
   border-color: #059669;
+  @apply dark:bg-green-700 dark:border-green-700;
+}
+
+:deep(.el-dialog) {
+  @apply dark:bg-dark-card dark:border dark:border-dark-border;
+}
+
+:deep(.el-button) {
+  @apply dark:bg-dark-card2 dark:border-dark-border dark:text-gray-300;
+  
+  &.el-button--primary {
+    @apply dark:bg-blue-600 dark:border-blue-600 dark:text-white dark:hover:bg-blue-700 dark:hover:border-blue-700;
+  }
+  
+  &.el-button--success {
+    @apply dark:bg-green-600 dark:border-green-600 dark:text-white dark:hover:bg-green-700 dark:hover:border-green-700;
+  }
+}
+
+:deep(.el-message-box) {
+  @apply dark:bg-dark-card dark:border-dark-border;
+  
+  .el-message-box__title {
+    @apply dark:text-gray-200;
+  }
+  
+  .el-message-box__content {
+    @apply dark:text-gray-300;
+  }
+  
+  .el-message-box__btns {
+    @apply dark:border-t dark:border-dark-border;
+    
+    .el-button {
+      @apply dark:bg-dark-card2 dark:border-dark-border dark:text-gray-300;
+      
+      &.el-button--primary {
+        @apply dark:bg-blue-600 dark:border-blue-600 dark:text-white;
+      }
+    }
+  }
 }
 </style> 

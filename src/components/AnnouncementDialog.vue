@@ -10,7 +10,7 @@
     >
       <div class="announcement-content" v-html="sanitizedAnnouncement"></div>
       <div class="announcement-footer flex justify-between items-center mt-4">
-        <el-checkbox v-model="dontShowToday" class="text-gray-600">今日不再提示</el-checkbox>
+        <el-checkbox v-model="dontShowToday" class="text-gray-600 dark:text-gray-300">今日不再提示</el-checkbox>
         <el-button type="primary" @click="handleClose" class="bg-gradient-to-r from-indigo-600 to-purple-600">
           关闭
         </el-button>
@@ -63,14 +63,21 @@ const handleClose = () => {
 
 // 显示对话框
 const showDialog = () => {
-  console.log('showDialog called', {
+  console.log('showDialog调用', {
     enableAnnouncement: props.enableAnnouncement,
-    announcement: props.announcement,
-    subsiteId: props.subsiteId
+    announcementLength: props.announcement ? props.announcement.length : 0,
+    announcement: props.announcement ? props.announcement.substring(0, 50) + '...' : null,
+    subsiteId: props.subsiteId,
+    sanitizedAnnouncementLength: sanitizedAnnouncement.value ? sanitizedAnnouncement.value.length : 0
   });
   
-  if (!props.enableAnnouncement || !props.announcement) {
-    console.log('公告未启用或内容为空，不显示公告');
+  if (!props.enableAnnouncement) {
+    console.log('公告未启用，不显示公告');
+    return;
+  }
+  
+  if (!props.announcement) {
+    console.log('公告内容为空，不显示公告');
     return;
   }
   
@@ -80,7 +87,7 @@ const showDialog = () => {
   const dontShow = localStorage.getItem(storageKey) === 'true';
   
   if (!dontShow) {
-    console.log('显示公告弹窗');
+    console.log('显示公告弹窗，今日未设置不再提示');
     dialogVisible.value = true;
   } else {
     console.log('用户今日已选择不再显示公告');
@@ -193,5 +200,41 @@ defineExpose({
 .announcement-content :deep(mark) {
   background-color: #fef3c7;
   padding: 0.1em 0.2em;
+}
+
+/* 深色模式样式 */
+:deep(.dark) .announcement-content :deep(a) {
+  color: #818cf8;
+}
+
+:deep(.dark) .announcement-content :deep(blockquote) {
+  border-left-color: #4b5563;
+  color: #9ca3af;
+}
+
+:deep(.dark) .announcement-content :deep(pre) {
+  background-color: #1f2937;
+}
+
+:deep(.dark) .announcement-content :deep(code) {
+  background-color: #1f2937;
+}
+
+:deep(.dark) .announcement-content :deep(table th),
+:deep(.dark) .announcement-content :deep(table td) {
+  border-color: #4b5563;
+}
+
+:deep(.dark) .announcement-content :deep(table th) {
+  background-color: #374151;
+}
+
+:deep(.dark) .announcement-content :deep(hr) {
+  border-top-color: #4b5563;
+}
+
+:deep(.dark) .announcement-content :deep(mark) {
+  background-color: #78350f;
+  color: #fef3c7;
 }
 </style>

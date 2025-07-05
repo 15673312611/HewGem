@@ -1,31 +1,32 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-6">
+  <div class="min-h-screen bg-gray-50 dark:bg-dark-bg p-6">
     <div class="grid grid-cols-[1fr,360px] gap-6 h-full">
       <!-- 左侧上传区域 -->
-      <div class="bg-white rounded-lg p-8 shadow-sm">
+      <div class="bg-white dark:bg-dark-card rounded-lg p-8 shadow-sm dark:shadow-dark-sm">
         <div class="h-full flex flex-col">
           <!-- 作品名称输入框 -->
           <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">作品名称 <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">作品名称 <span class="text-red-500">*</span></label>
             <el-input
               v-model="form.name"
               placeholder="请输入作品名称"
               :maxlength="50"
               show-word-limit
               :class="{ 'is-error': !form.name && formSubmitted }"
+              class="dark:text-gray-300"
             />
             <div v-if="!form.name && formSubmitted" class="text-red-500 text-xs mt-1">请输入作品名称</div>
           </div>
 
           <!-- 上传区域 -->
           <div 
-            class="flex-1 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/60 transition-colors min-h-[330px]"
+            class="flex-1 border-2 border-dashed border-gray-200 dark:border-dark-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/60 dark:hover:border-blue-500/60 transition-colors min-h-[330px]"
             @drop.prevent="handleFileDrop"
             @dragover.prevent="isDragging = true"
             @dragleave.prevent="isDragging = false"
             @click="triggerFileInput"
             :class="{ 
-              'border-primary/60 bg-blue-50/30': isDragging,
+              'border-primary/60 bg-blue-50/30 dark:border-blue-500/60 dark:bg-blue-900/20': isDragging,
               'border-red-500': !uploadFile && !videoUrl && formSubmitted 
             }"
           >
@@ -56,26 +57,26 @@
             
             <!-- 上传提示 -->
             <div v-else class="text-center">
-              <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CloudArrowUpIcon class="w-10 h-10 text-primary" />
+              <div class="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CloudArrowUpIcon class="w-10 h-10 text-primary dark:text-blue-400" />
               </div>
-              <div class="text-lg font-medium text-gray-800 mb-3">
+              <div class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">
                 {{ uploadFile ? uploadFile.name : '点击或拖拽视频到这里' }} <span class="text-red-500">*</span>
               </div>
               <div v-if="!uploadFile && formSubmitted" class="text-red-500 text-sm mb-3">请上传视频文件</div>
-              <div class="text-sm text-gray-500 mb-4">支持的格式：</div>
-              <div class="text-sm text-gray-400">
+              <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">支持的格式：</div>
+              <div class="text-sm text-gray-400 dark:text-gray-500">
                 <div class="mb-1">视频：MP4、AVI、MOV (不超过200MB)</div>
               </div>
             </div>
 
             <!-- 添加合成中的状态显示 -->
-            <div v-if="loading" class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
-              <div class="w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center mb-6">
-                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+            <div v-if="loading" class="absolute inset-0 bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+              <div class="w-24 h-24 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-6">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary dark:border-blue-400"></div>
               </div>
-              <div class="text-lg font-medium text-gray-800 mb-2">正在合成中</div>
-              <div class="text-sm text-gray-500">请稍候，我们正在为您生成视频...</div>
+              <div class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">正在合成中</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">请稍候，我们正在为您生成视频...</div>
             </div>
           </div>
 
@@ -86,8 +87,8 @@
                 class="flex items-center px-6 py-2.5 rounded-lg transition-colors"
                 :class="[
                   isAudioMode 
-                    ? 'text-gray-700 hover:bg-gray-50' 
-                    : 'text-primary bg-blue-50 hover:bg-blue-100'
+                    ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-card2' 
+                    : 'text-primary dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50'
                 ]"
                 @click="toggleMode('text')"
               >
@@ -98,8 +99,8 @@
                 class="flex items-center px-6 py-2.5 rounded-lg transition-colors"
                 :class="[
                   isAudioMode 
-                    ? 'text-primary bg-blue-50 hover:bg-blue-100' 
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'text-primary dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50' 
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-card2'
                 ]"
                 @click="toggleMode('audio')"
               >
@@ -114,34 +115,24 @@
                 v-model="inputText"
                 rows="6"
                 placeholder="请输入要转换的文本内容（最多450字）；在点击开始生成后，请耐心等待，不要进行切换或者刷新页面。注意！不要输入或上传反法相关内容，又或侵犯第三方权益或版权内容。服务器日志均有详细记录。"
-                class="w-full bg-gray-50 rounded-lg p-4 text-sm text-gray-700 placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 border border-gray-100"
+                class="w-full bg-gray-50 dark:bg-dark-card2 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 dark:focus:ring-blue-500/30 border border-gray-100 dark:border-dark-border"
                 :class="{ 'border-red-500': !inputText && formSubmitted && !isAudioMode }"
               ></textarea>
               <div v-if="!inputText && formSubmitted && !isAudioMode" class="text-red-500 text-xs mt-1">请输入要转换的文本内容</div>
               
-              <!-- 添加线路选择下拉框 -->
               <div class="flex items-center justify-between mt-2">
-<!--                <div class="flex items-center">-->
-<!--                  <label class="text-sm text-gray-700 mr-2">合成线路：</label>-->
-<!--                  <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">-->
-<!--                    <el-option label="普通线路" value="0" />-->
-<!--                    <el-option label="高级线路" value="1" />-->
-<!--                  </el-select>-->
-<!--                </div>-->
-                <div :class="{ 'text-red-500': inputText.length > 450 }" class="text-xs text-gray-500">{{ inputText.length }}/450</div>
+                <div :class="{ 'text-red-500': inputText.length > 450 }" class="text-xs text-gray-500 dark:text-gray-400">{{ inputText.length }}/450</div>
               </div>
-              
-
             </template>
 
             <!-- 上传音频模式 -->
             <template v-else>
-              <div class="w-full bg-white rounded-lg p-4 text-sm text-gray-700 border border-gray-200 min-h-[200px] flex flex-col items-center justify-center cursor-pointer"
+              <div class="w-full bg-white dark:bg-dark-card2 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-dark-border min-h-[200px] flex flex-col items-center justify-center cursor-pointer"
                    @click="triggerAudioInput"
                    @drop.prevent="handleAudioDrop"
                    @dragover.prevent="isAudioDragging = true"
                    @dragleave.prevent="isAudioDragging = false"
-                   :class="{ 'border-primary/60 bg-blue-50/30': isAudioDragging }">
+                   :class="{ 'border-primary/60 bg-blue-50/30 dark:border-blue-500/60 dark:bg-blue-900/20': isAudioDragging }">
                 <input
                   type="file"
                   ref="audioInput"
@@ -149,27 +140,18 @@
                   @change="handleAudioChange"
                   accept=".mp3,.wav"
                 />
-                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                  <MusicalNoteIcon class="w-8 h-8 text-gray-400" />
+                <div class="w-16 h-16 bg-gray-50 dark:bg-dark-card3 rounded-full flex items-center justify-center mb-4">
+                  <MusicalNoteIcon class="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
-                <div class="text-gray-500">{{ audioFile ? audioFile.name : '点击或拖拽音频文件到这里' }}</div>
-                <div v-if="audioFile" class="text-xs text-primary mt-2">时长：{{ audioDuration }}</div>
-                <div class="text-xs text-gray-400 mt-2">支持MP3、WAV格式，不超过20MB</div>
+                <div class="text-gray-500 dark:text-gray-400">{{ audioFile ? audioFile.name : '点击或拖拽音频文件到这里' }}</div>
+                <div v-if="audioFile" class="text-xs text-primary dark:text-blue-400 mt-2">时长：{{ audioDuration }}</div>
+                <div class="text-xs text-gray-400 dark:text-gray-500 mt-2">支持MP3、WAV格式，不超过20MB</div>
               </div>
-              
-              <!-- 添加线路选择下拉框 -->
-<!--              <div class="flex items-center mt-4">-->
-<!--                <label class="text-sm text-gray-700 mr-2">合成线路：</label>-->
-<!--                <el-select v-model="selectedType" placeholder="请选择线路" size="small" style="width: 120px;">-->
-<!--                  <el-option label="普通线路" value="0" />-->
-<!--                  <el-option label="高级线路" value="1" />-->
-<!--                </el-select>-->
-<!--              </div>-->
             </template>
           </div>
 
           <!-- 生成按钮 -->
-          <button class="mt-8 w-full bg-gradient-to-r from-primary to-blue-600 text-white py-3.5 rounded-lg font-medium hover:opacity-90 transition-opacity shadow-sm"
+          <button class="mt-8 w-full bg-gradient-to-r from-primary to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white py-3.5 rounded-lg font-medium hover:opacity-90 transition-opacity shadow-sm dark:shadow-dark-sm"
                   @click="handleSubmit"
                   :loading="loading"
                   :disabled="loading">
@@ -179,24 +161,23 @@
       </div>
 
       <!-- 右侧音色选择 -->
-      <div class="bg-white rounded-lg p-6 shadow-sm">
-        <h2 class="text-xl font-medium text-gray-800 mb-6">选择音色 <span class="text-red-500" v-if="!isAudioMode">*</span></h2>
+      <div class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-sm dark:shadow-dark-sm">
+        <h2 class="text-xl font-medium text-gray-800 dark:text-gray-200 mb-6">选择音色 <span class="text-red-500" v-if="!isAudioMode">*</span></h2>
         
         <!-- 音色选择区域 -->
-        <div class="mb-6">
-          <!-- <h3 class="text-lg font-medium mb-4">选择音色</h3> -->
+        <div>
           <div class="flex space-x-4 mb-4">
             <button
               @click="currentVoiceTab = 'system'"
-              class="px-4 py-2 rounded-lg transition-all duration-300"
-              :class="currentVoiceTab === 'system' ? 'bg-[#FF5722] text-white' : 'bg-white text-gray-700 border border-gray-200'"
+              class="px-6 py-3 rounded-lg text-base transition-all duration-300"
+              :class="currentVoiceTab === 'system' ? 'bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white shadow-lg dark:shadow-dark-lg' : 'bg-white dark:bg-dark-card2 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-dark-border hover:border-purple-300 dark:hover:border-purple-700/50'"
             >
               系统音色
             </button>
             <button
               @click="currentVoiceTab = 'custom'"
-              class="px-4 py-2 rounded-lg transition-all duration-300"
-              :class="currentVoiceTab === 'custom' ? 'bg-[#FF5722] text-white' : 'bg-white text-gray-700 border border-gray-200'"
+              class="px-6 py-3 rounded-lg text-base transition-all duration-300"
+              :class="currentVoiceTab === 'custom' ? 'bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white shadow-lg dark:shadow-dark-lg' : 'bg-white dark:bg-dark-card2 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-dark-border hover:border-purple-300 dark:hover:border-purple-700/50'"
             >
               自定义音色
             </button>
@@ -205,42 +186,39 @@
           <div v-if="!selectedVoice && formSubmitted && !isAudioMode" class="text-red-500 text-xs mb-2">请选择音色</div>
 
           <!-- 音色列表 -->
-          <div class="h-[420px] overflow-y-auto pr-4 space-y-3" style="scrollbar-width: thin;">
+          <div class="h-[500px] overflow-y-auto pr-4 space-y-4 pb-4" style="scrollbar-width: thin;">
             <template v-if="currentVoiceTab === 'system'">
               <!-- 收藏的声音 -->
               <template v-if="favoriteVoices.length > 0">
                 <div
                   v-for="voice in favoriteVoices"
                   :key="'fav-' + voice.id"
-                  class="bg-white rounded-lg p-4 flex items-start space-x-3 hover:bg-gray-50 transition-colors group cursor-pointer"
-                  :class="{'border-2 border-[#FF5722]': selectedVoice?.id === voice.id}"
+                  class="bg-white dark:bg-dark-card2 rounded-lg p-5 flex items-start space-x-4 hover:bg-gray-50 dark:hover:bg-dark-card3 group cursor-pointer shadow-soft hover:shadow-soft-md border-2"
+                  :class="[selectedVoice?.id === voice.id ? 'border-purple-500 dark:border-purple-600' : 'border-transparent']"
                   @click="selectVoice(voice)"
                 >
                   <!-- 播放按钮 -->
                   <div class="flex-shrink-0">
                     <button
                       @click.stop="playVoice(voice)"
-                      class="w-12 h-12 rounded-full bg-[#FFF7F0] flex items-center justify-center group-hover:bg-[#FFE4D1] transition-colors relative"
+                      class="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-all duration-300 relative shadow-colored-sm group-hover:shadow-colored"
                     >
-                      <div class="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-[#FF5722] border-b-[8px] border-b-transparent ml-1"></div>
+                      <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[14px] border-l-purple-500 dark:border-l-purple-400 border-b-[10px] border-b-transparent ml-1 group-hover:scale-110 transition-transform"></div>
                     </button>
                   </div>
 
                   <!-- 文字信息 -->
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center space-x-2">
-                      <h3 class="text-[#1F2329] font-medium truncate">{{ voice.name }}</h3>
-                      <div class="flex items-center space-x-2">
-                        <el-icon :size="16" :color="voice.gender === 1 ? '#409EFF' : '#F56C6C'">
+                      <h3 class="text-[#1F2329] dark:text-gray-200 font-medium truncate">{{ voice.name }}</h3>
+                      <div class="flex items-center">
+                        <el-icon :size="16" :color="voice.gender === 1 ? '#8B5CF6' : '#D946EF'">
                           <Male v-if="voice.gender === 1" />
                           <Female v-else />
                         </el-icon>
-                        <el-icon :size="16" class="text-[#FF5722]">
-                          <StarFilled />
-                        </el-icon>
                       </div>
                     </div>
-                    <div class="text-[#646A73] text-sm mt-1">中文</div>
+                    <div class="text-[#646A73] dark:text-gray-400 text-sm mt-1">中文</div>
                   </div>
                 </div>
               </template>
@@ -249,32 +227,32 @@
               <div
                 v-for="voice in hotVoices"
                 :key="'hot-' + voice.id"
-                class="bg-white rounded-lg p-4 flex items-start space-x-3 hover:bg-gray-50 transition-colors group cursor-pointer"
-                :class="{'border-2 border-[#FF5722]': selectedVoice?.id === voice.id}"
+                class="bg-white dark:bg-dark-card2 rounded-lg p-5 flex items-start space-x-4 hover:bg-gray-50 dark:hover:bg-dark-card3 group cursor-pointer shadow-soft hover:shadow-soft-md border-2"
+                :class="[selectedVoice?.id === voice.id ? 'border-purple-500 dark:border-purple-600' : 'border-transparent']"
                 @click="selectVoice(voice)"
               >
                 <!-- 播放按钮 -->
                 <div class="flex-shrink-0">
                   <button
                     @click.stop="playVoice(voice)"
-                    class="w-12 h-12 rounded-full bg-[#FFF7F0] flex items-center justify-center group-hover:bg-[#FFE4D1] transition-colors relative"
+                    class="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-all duration-300 relative shadow-colored-sm group-hover:shadow-colored"
                   >
-                    <div class="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-[#FF5722] border-b-[8px] border-b-transparent ml-1"></div>
+                    <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[14px] border-l-purple-500 dark:border-l-purple-400 border-b-[10px] border-b-transparent ml-1 group-hover:scale-110 transition-transform"></div>
                   </button>
                 </div>
 
                 <!-- 文字信息 -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center space-x-2">
-                    <h3 class="text-[#1F2329] font-medium truncate">{{ voice.name }}</h3>
+                    <h3 class="text-[#1F2329] dark:text-gray-200 font-medium truncate">{{ voice.name }}</h3>
                     <div class="flex items-center">
-                      <el-icon :size="16" :color="voice.gender === 1 ? '#409EFF' : '#F56C6C'">
+                      <el-icon :size="16" :color="voice.gender === 1 ? '#8B5CF6' : '#D946EF'">
                         <Male v-if="voice.gender === 1" />
                         <Female v-else />
                       </el-icon>
                     </div>
                   </div>
-                  <div class="text-[#646A73] text-sm mt-1">中文</div>
+                  <div class="text-[#646A73] dark:text-gray-400 text-sm mt-1">中文</div>
                 </div>
               </div>
             </template>
@@ -284,35 +262,79 @@
               <div
                 v-for="voice in customVoices"
                 :key="voice.id"
-                class="bg-white rounded-lg p-4 flex items-start space-x-3 hover:bg-gray-50 transition-colors group cursor-pointer"
-                :class="{'border-2 border-[#FF5722]': selectedVoice?.id === voice.id}"
+                class="bg-white dark:bg-dark-card2 rounded-lg p-5 flex items-start space-x-4 hover:bg-gray-50 dark:hover:bg-dark-card3 group cursor-pointer shadow-soft hover:shadow-soft-md border-2"
+                :class="[selectedVoice?.id === voice.id ? 'border-purple-500 dark:border-purple-600' : 'border-transparent']"
                 @click="selectVoice(voice)"
               >
                 <!-- 播放按钮 -->
                 <div class="flex-shrink-0">
                   <button
                     @click.stop="playVoice(voice)"
-                    class="w-12 h-12 rounded-full bg-[#FFF7F0] flex items-center justify-center group-hover:bg-[#FFE4D1] transition-colors relative"
+                    class="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-all duration-300 relative shadow-colored-sm group-hover:shadow-colored"
                   >
-                    <div class="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-[#FF5722] border-b-[8px] border-b-transparent ml-1"></div>
+                    <div class="w-0 h-0 border-t-[10px] border-t-transparent border-l-[14px] border-l-purple-500 dark:border-l-purple-400 border-b-[10px] border-b-transparent ml-1 group-hover:scale-110 transition-transform"></div>
                   </button>
                 </div>
 
                 <!-- 文字信息 -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center space-x-2">
-                    <h3 class="text-[#1F2329] font-medium truncate">{{ voice.name }}</h3>
+                    <h3 class="text-[#1F2329] dark:text-gray-200 font-medium truncate">{{ voice.name }}</h3>
                     <div class="flex items-center">
-                      <el-icon :size="16" :color="voice.gender === 1 ? '#409EFF' : '#F56C6C'">
+                      <el-icon :size="16" :color="voice.gender === 1 ? '#8B5CF6' : '#D946EF'">
                         <Male v-if="voice.gender === 1" />
                         <Female v-else />
                       </el-icon>
                     </div>
                   </div>
-                  <div class="text-[#646A73] text-sm mt-1">中文</div>
+                  <div class="text-[#646A73] dark:text-gray-400 text-sm mt-1">中文</div>
                 </div>
               </div>
             </template>
+          </div>
+          
+          <!-- 分隔线 -->
+          <div class="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent my-4"></div>
+          
+          <!-- 语速调节滑块 - 美化版 -->
+          <div class="bg-white dark:bg-dark-card2 rounded-lg p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-500 dark:text-purple-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                </svg>
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">语速调节</label>
+              </div>
+              <span class="text-sm bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-2 py-1 rounded font-medium">{{ speedValue.toFixed(1) }}</span>
+            </div>
+            <el-slider
+              v-model="speedValue"
+              :min="0.5"
+              :max="2.0"
+              :step="0.1"
+              class="custom-slider"
+              :format-tooltip="(val) => val.toFixed(1)"
+            />
+            <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                </svg>
+                慢速 0.5
+              </span>
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                </svg>
+                正常 1.0
+              </span>
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                </svg>
+                快速 2.0
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -351,6 +373,7 @@ const selectedVoice = ref(null)
 const audioElements = ref({})
 const isPlayingMap = ref({})
 const isComponentMounted = ref(true)
+const speedValue = ref(1.0) // 默认语速值
 
 const fileInput = ref(null)
 const uploadFile = ref(null)
@@ -757,6 +780,7 @@ const handleSubmit = async () => {
     }
     formData.append('userId', localStorage.getItem('userId'))
     formData.append('type', selectedType.value)
+    formData.append('speed', speedValue.value.toString()) // 添加语速参数
     
     const response = await request.post('/api/task/create', formData)
     
@@ -835,5 +859,89 @@ const removeVideo = () => {
 .backdrop-blur-sm {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+}
+
+/* 修改字数统计样式 */
+:deep(.el-input__wrapper) {
+  .el-input__count {
+    background: transparent !important;
+  }
+}
+
+:deep(.el-input__count-inner) {
+  background: transparent !important;
+  color: #666 !important;
+}
+
+.dark :deep(.el-input__count-inner) {
+  background: transparent !important;
+  color: #9ca3af !important;
+}
+
+/* 确保输入框文字在暗色模式下可见 */
+.dark :deep(.el-input__inner) {
+  color: #e5e7eb !important;
+}
+
+.dark :deep(.el-input__wrapper) {
+  background-color: #1a1a1a !important;
+  box-shadow: 0 0 0 1px #374151 inset !important;
+}
+
+.dark :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px #4b5563 inset !important;
+}
+
+.dark :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px #3b82f6 inset !important;
+}
+
+/* 自定义滑块样式 */
+.custom-slider :deep(.el-slider__runway) {
+  height: 6px;
+  background-color: #e5e7eb;
+}
+
+.dark .custom-slider :deep(.el-slider__runway) {
+  background-color: #374151;
+}
+
+.custom-slider :deep(.el-slider__bar) {
+  height: 6px;
+  background-color: #8b5cf6;
+}
+
+.dark .custom-slider :deep(.el-slider__bar) {
+  background-color: #7c3aed;
+}
+
+.custom-slider :deep(.el-slider__button) {
+  width: 20px;
+  height: 20px;
+  border: 4px solid #8b5cf6;
+  background-color: #fff;
+  position: relative;
+  z-index: 2;
+}
+
+.dark .custom-slider :deep(.el-slider__button) {
+  border-color: #7c3aed;
+  background-color: #1f2937;
+}
+
+.custom-slider :deep(.el-slider__button-wrapper) {
+  top: -9px;
+  height: 20px;
+  width: 20px;
+  transform: translateY(0);
+  z-index: 3;
+}
+
+.custom-slider :deep(.el-slider__button-wrapper .el-tooltip) {
+  height: 20px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style> 

@@ -57,7 +57,16 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const setSiteInfo = (data) => {
+    console.log('设置站点信息', data);
+    
     if (data.subsite) {
+      console.log('设置分站信息', {
+        name: data.subsite.name,
+        logo: data.subsite.logo,
+        announcement: data.subsite.announcement,
+        enableAnnouncement: data.subsite.enableAnnouncement
+      });
+      
       subsite.value = data.subsite
       localStorage.setItem('subsite', JSON.stringify(data.subsite))
       mainSiteName.value = ''
@@ -69,6 +78,13 @@ export const useUserStore = defineStore('user', () => {
       localStorage.removeItem('mainSiteAnnouncement')
       localStorage.removeItem('enableMainSiteAnnouncement')
     } else {
+      console.log('设置主站信息', {
+        mainSiteName: data.mainSiteName,
+        mainSiteLogo: data.mainSiteLogo,
+        mainSiteAnnouncement: data.mainSiteAnnouncement,
+        enableMainSiteAnnouncement: data.enableMainSiteAnnouncement
+      });
+      
       subsite.value = {}
       localStorage.removeItem('subsite')
       mainSiteName.value = data.mainSiteName || ''
@@ -80,6 +96,13 @@ export const useUserStore = defineStore('user', () => {
       localStorage.setItem('mainSiteAnnouncement', mainSiteAnnouncement.value)
       localStorage.setItem('enableMainSiteAnnouncement', JSON.stringify(enableMainSiteAnnouncement.value))
     }
+    
+    console.log('站点信息设置完成', {
+      siteName: siteName.value,
+      siteLogo: siteLogo.value,
+      announcement: announcement.value,
+      isAnnouncementEnabled: isAnnouncementEnabled.value
+    });
   }
 
   const logout = () => {
@@ -161,6 +184,7 @@ export const useUserStore = defineStore('user', () => {
     isLoggedIn,
     setToken,
     setUser,
+    setSiteInfo,
     logout,
     initAuth,
     updateUserInfo

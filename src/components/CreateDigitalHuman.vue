@@ -5,11 +5,11 @@
     
     <!-- 弹窗内容 -->
     <div class="relative min-h-screen flex items-center justify-center p-4">
-      <div class="bg-white w-full max-w-md rounded-lg shadow-xl relative">
+      <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-lg shadow-xl dark:shadow-dark-lg relative">
         <!-- 标题和关闭按钮 -->
-        <div class="flex items-center justify-between p-4 border-b border-gray-100">
-          <h3 class="text-xl font-medium text-gray-900">创建数字人</h3>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-500">
+        <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
+          <h3 class="text-xl font-medium text-gray-900 dark:text-gray-200">创建数字人</h3>
+          <button @click="closeModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400">
             <XMarkIcon class="w-5 h-5" />
           </button>
         </div>
@@ -18,9 +18,9 @@
           <form @submit.prevent="handleSubmit">
             <!-- 上传视频 -->
             <div class="mb-6">
-              <label class="block text-sm font-medium text-gray-700 mb-2">上传视频</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">上传视频</label>
               <div 
-                class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center cursor-pointer"
+                class="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg p-6 text-center cursor-pointer hover:border-primary dark:hover:border-primary/70"
                 @click="triggerFileInput"
                 @dragover.prevent
                 @drop.prevent="handleFileDrop"
@@ -32,17 +32,17 @@
                   accept="video/mp4,video/avi,video/mov"
                   @change="handleFileChange"
                 />
-                <CloudArrowUpIcon v-if="!uploadedFile" class="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <CloudArrowUpIcon v-if="!uploadedFile" class="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
                 <div v-if="!uploadedFile">
-                  <p class="text-sm text-gray-600 mb-1">点击或拖拽视频或图片文件到这里</p>
-                  <p class="text-xs text-gray-400">支持格式：</p>
-                  <p class="text-xs text-gray-400">视频：MP4、AVI、MOV (不超过100MB)</p>
-                  <p class="text-xs text-gray-400">图片：JPG、PNG、JPEG、WEBP (不超过10MB)</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">点击或拖拽视频或图片文件到这里</p>
+                  <p class="text-xs text-gray-400 dark:text-gray-500">支持格式：</p>
+                  <p class="text-xs text-gray-400 dark:text-gray-500">视频：MP4、AVI、MOV (不超过200MB)</p>
+                  <p class="text-xs text-gray-400 dark:text-gray-500">图片：JPG、PNG、JPEG、WEBP (不超过10MB)</p>
                 </div>
                 <div v-else class="text-left">
                   <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">{{ uploadedFile.name }}</span>
-                    <button @click.stop="removeFile" class="text-gray-400 hover:text-gray-600">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ uploadedFile.name }}</span>
+                    <button @click.stop="removeFile" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400">
                       <XMarkIcon class="w-5 h-5" />
                     </button>
                   </div>
@@ -52,22 +52,22 @@
 
             <!-- 数字人名称 -->
             <div class="mb-6">
-              <label class="block text-sm font-medium text-gray-700 mb-2">数字人名称</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">数字人名称</label>
               <input 
                 type="text" 
                 v-model="formData.name"
-                class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white dark:bg-dark-card2 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="给你的数字人起个名字"
               />
             </div>
 
             <!-- 描述信息 -->
             <div class="mb-6">
-              <label class="block text-sm font-medium text-gray-700 mb-2">描述信息</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">描述信息</label>
               <textarea 
                 v-model="formData.description"
                 rows="4"
-                class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white dark:bg-dark-card2 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="描述一下这个数字人的特点（选填）"
               ></textarea>
             </div>
@@ -77,14 +77,14 @@
               <button 
                 type="button"
                 @click="closeModal"
-                class="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+                class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
               >
                 取消
               </button>
               <button 
                 type="submit"
                 :disabled="!isFormValid || isSubmitting"
-                class="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 disabled:opacity-50"
+                class="px-4 py-2 bg-primary dark:bg-primary/90 text-white rounded-lg text-sm hover:bg-primary/90 dark:hover:bg-primary/80 disabled:opacity-50"
               >
                 创建数字人
               </button>
@@ -154,7 +154,7 @@ const handleFileDrop = (event) => {
 
 const validateAndSetFile = (file) => {
   const videoTypes = ['video/mp4', 'video/avi', 'video/quicktime']
-  const maxSize = 100 * 1024 * 1024 // 100MB
+  const maxSize = 200 * 1024 * 1024 // 200MB
 
   if (!videoTypes.includes(file.type)) {
     alert('请上传正确格式的视频文件')
@@ -162,7 +162,7 @@ const validateAndSetFile = (file) => {
   }
 
   if (file.size > maxSize) {
-    alert('文件大小不能超过100MB')
+    alert('文件大小不能超过200MB')
     return
   }
 

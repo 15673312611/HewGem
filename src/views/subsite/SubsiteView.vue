@@ -114,28 +114,11 @@ const subsiteDomain = ref('');
 const announcementDialog = ref(null);
 const loading = ref(false);
 
-// 从URL中获取分站域名
-const getDomainFromUrl = () => {
-  // 优先从路由参数中获取
-  if (route.params.domain) {
-    return route.params.domain;
-  }
-  
-  // 如果没有路由参数，从当前域名中提取
-  const hostname = window.location.hostname;
-  // 假设分站域名格式为：subdomain.cutb.cn
-  if (hostname.includes('.cutb.cn')) {
-    return hostname.split('.')[0];
-  }
-  
-  return null;
-};
-
 // 获取分站信息
 const fetchSubsiteInfo = async () => {
-  const domain = getDomainFromUrl();
+  const domain = route.params.domain;
   if (!domain) {
-    console.error('无法获取分站域名');
+    console.error('未找到分站域名');
     return;
   }
   
@@ -143,7 +126,7 @@ const fetchSubsiteInfo = async () => {
   loading.value = true;
   
   try {
-    const response = await axios.get(`/api/subsite/info-by-domain/${domain}`);
+    const response = await axios.get('/api/subsite/public-info');
     
     if (response.data.code === 0 && response.data.data) {
       subsiteInfo.value = response.data.data;
@@ -160,10 +143,10 @@ const fetchSubsiteInfo = async () => {
         showAnnouncement();
       }
     } else {
-      console.error('获取分站信息失败:', response.data.message);
+      console.error('获取平台信息失败:', response.data.message);
     }
   } catch (error) {
-    console.error('获取分站信息出错:', error);
+    console.error('获取平台信息出错:', error);
   } finally {
     loading.value = false;
   }

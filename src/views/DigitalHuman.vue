@@ -1,13 +1,13 @@
 <template>
-  <div class="min-h-screen bg-[#F7F8FA] p-6">
+  <div class="min-h-screen bg-[#F7F8FA] dark:bg-dark-bg p-6">
     <div class="max-w-7xl mx-auto">
-      <h1 class="text-2xl font-medium text-gray-800 mb-6">我的数字人</h1>
+      <h1 class="text-2xl font-medium text-gray-800 dark:text-gray-200 mb-6">我的数字人</h1>
       
       <!-- 操作按钮 -->
       <div class="flex items-center gap-4 mb-8">
         <button 
           @click="showCreateModal = true"
-          class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          class="inline-flex items-center px-4 py-2 bg-primary dark:bg-blue-600 text-white rounded-lg hover:bg-primary/90 dark:hover:bg-blue-700 transition-colors"
         >
           <PlusIcon class="w-5 h-5 mr-2" />
           创建数字人
@@ -17,8 +17,8 @@
       <!-- 数字人列表 -->
       <div v-if="digitalHumans.length > 0" class="grid grid-cols-5 gap-4">
         <div v-for="item in digitalHumans" :key="item.id" 
-             class="bg-white rounded-lg p-4 cursor-pointer hover:shadow-md transition-all duration-300 group">
-          <div class="relative aspect-video mb-4 overflow-hidden rounded-lg bg-gray-100">
+             class="bg-white dark:bg-dark-card rounded-lg p-4 cursor-pointer hover:shadow-md dark:hover:shadow-dark-md transition-all duration-300 group">
+          <div class="relative aspect-video mb-4 overflow-hidden rounded-lg bg-gray-100 dark:bg-dark-card2">
             <img 
               :src="item.coverUrl" 
               alt="" 
@@ -27,19 +27,19 @@
               @load="handleImageLoad($event, item)"
             />
             <div v-if="item.imageLoading" class="absolute inset-0 flex items-center justify-center">
-              <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <div class="w-8 h-8 border-4 border-primary dark:border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
-            <div v-if="item.imageError" class="absolute inset-0 flex items-center justify-center bg-gray-100">
-              <PhotoIcon class="w-12 h-12 text-gray-400" />
+            <div v-if="item.imageError" class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-dark-card2">
+              <PhotoIcon class="w-12 h-12 text-gray-400 dark:text-gray-500" />
             </div>
             <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <button @click="playVideo(item)" 
                       class="w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-300 transform hover:scale-110">
-                <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                  <svg v-if="!item.isPlaying" class="w-6 h-6 text-gray-900" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div class="w-12 h-12 rounded-full bg-white/90 dark:bg-dark-card/90 flex items-center justify-center">
+                  <svg v-if="!item.isPlaying" class="w-6 h-6 text-gray-900 dark:text-gray-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
                   </svg>
-                  <svg v-else class="w-6 h-6 text-gray-900" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg v-else class="w-6 h-6 text-gray-900 dark:text-gray-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="currentColor"/>
                   </svg>
                 </div>
@@ -52,19 +52,19 @@
                    controls></video>
           </div>
           <div class="flex items-center justify-between mb-3">
-            <h3 class="text-gray-800 font-medium truncate">{{ item.name }}</h3>
-            <span class="text-xs px-2 py-0.5 bg-green-50 text-green-600 rounded">{{ item.status }}</span>
+            <h3 class="text-gray-800 dark:text-gray-200 font-medium truncate">{{ item.name }}</h3>
+            <span class="text-xs px-2 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded">{{ item.status }}</span>
           </div>
-          <div class="text-xs text-gray-500 mb-3">创建时间：{{ formatDate(item.createTime) }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">创建时间：{{ formatDate(item.createTime) }}</div>
           <div class="mt-3 flex items-center space-x-2">
             <button 
               @click="handleUseDigitalHuman(item)"
-              class="flex-1 px-3 py-2 bg-primary/10 text-primary text-sm rounded hover:bg-primary/20">
+              class="flex-1 px-3 py-2 bg-primary/10 dark:bg-blue-900/30 text-primary dark:text-blue-400 text-sm rounded hover:bg-primary/20 dark:hover:bg-blue-900/50">
               使用此数字人
             </button>
             <button 
               @click="handleDelete(item.id)"
-              class="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+              class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
             >
               <TrashIcon class="w-5 h-5" />
             </button>
@@ -73,13 +73,13 @@
       </div>
 
       <!-- 空状态展示 -->
-      <div v-else class="bg-white rounded-lg p-20">
+      <div v-else class="bg-white dark:bg-dark-card rounded-lg p-20">
         <div class="flex flex-col items-center justify-center text-center">
-          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <UserCircleIcon class="w-12 h-12 text-gray-400" />
+          <div class="w-20 h-20 bg-gray-100 dark:bg-dark-card2 rounded-full flex items-center justify-center mb-4">
+            <UserCircleIcon class="w-12 h-12 text-gray-400 dark:text-gray-500" />
           </div>
-          <div class="text-xl text-gray-800 font-medium mb-2">还没有数字人</div>
-          <div class="text-gray-500">点击上方按钮开始创建吧</div>
+          <div class="text-xl text-gray-800 dark:text-gray-200 font-medium mb-2">还没有数字人</div>
+          <div class="text-gray-500 dark:text-gray-400">点击上方按钮开始创建吧</div>
         </div>
       </div>
     </div>
@@ -92,20 +92,20 @@
 
     <!-- 删除确认弹窗 -->
     <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">确认删除</h3>
-        <p class="text-gray-500 mb-6">确定要删除这个数字人吗？此操作不可恢复。</p>
+      <div class="bg-white dark:bg-dark-card rounded-lg p-6 w-96">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-200 mb-4">确认删除</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-6">确定要删除这个数字人吗？此操作不可恢复。</p>
         <div class="flex justify-end space-x-4">
           <button 
             @click="showDeleteConfirm = false"
-            class="px-4 py-2 text-gray-600 hover:text-gray-800"
+            class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
             :disabled="deleteLoading"
           >
             取消
           </button>
           <button 
             @click="confirmDelete"
-            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
             :disabled="deleteLoading"
           >
             <span v-if="deleteLoading">删除中...</span>
@@ -247,7 +247,33 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
+/* 视频播放器深色模式 */
+video::-webkit-media-controls {
+  @apply dark:bg-dark-card;
+}
+
+video::-webkit-media-controls-panel {
+  @apply dark:bg-dark-card2;
+}
+
+video::-webkit-media-controls-play-button {
+  @apply dark:text-blue-400;
+}
+
+video::-webkit-media-controls-timeline {
+  @apply dark:bg-dark-card3;
+}
+
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display {
+  @apply dark:text-gray-300;
+}
+
+video::-webkit-media-controls-volume-slider {
+  @apply dark:bg-dark-card3;
+}
+
+video::-webkit-media-controls-mute-button {
+  @apply dark:text-gray-300;
 }
 </style> 
