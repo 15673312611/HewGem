@@ -5,10 +5,11 @@ import axios from 'axios';
  * 获取 OSS 文件上传预签名 URL
  * @param fileName 文件原始名称
  * @param directory OSS 存储目录前缀
+ * @param expireSeconds 过期时间（秒），默认为3600秒（1小时）
  */
-export async function getOssToken(fileName, directory = 'uploads') {
+export async function getOssToken(fileName, directory = 'uploads', expireSeconds = 3600) {
   const res = await request.get('/api/oss/presigned-url', {
-    params: { fileName, directory },
+    params: { fileName, directory, expireSeconds },
   });
   if (res.code !== 200) {
     throw new Error(res.message || '获取 OSS 上传凭证失败');
@@ -20,11 +21,12 @@ export async function getOssToken(fileName, directory = 'uploads') {
  * 上传文件到 OSS
  * @param file File 对象
  * @param directory OSS 存储目录前缀
+ * @param expireSeconds 过期时间（秒），默认为3600秒（1小时）
  * @returns {Promise<string>} 资源访问 URL
  */
-export async function uploadFileToOss(file, directory) {
+export async function uploadFileToOss(file, directory, expireSeconds = 3600) {
   // 获取预签名表单字段
-  const token = await getOssToken(file.name, directory);
+  const token = await getOssToken(file.name, directory, expireSeconds);
   
   // 构建FormData，包含所有token字段和文件
   const formData = new FormData();

@@ -304,7 +304,7 @@
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
                 </svg>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">语速调节</label>
-              </div>
+        </div>
               <span class="text-sm bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-2 py-1 rounded font-medium">{{ speedValue.toFixed(1) }}</span>
             </div>
             <el-slider
@@ -373,7 +373,7 @@ const selectedVoice = ref(null)
 const audioElements = ref({})
 const isPlayingMap = ref({})
 const isComponentMounted = ref(true)
-const speedValue = ref(1.0) // 默认语速值
+const speedValue = ref(1.1) // 默认语速值
 
 const fileInput = ref(null)
 const uploadFile = ref(null)
@@ -700,6 +700,53 @@ onMounted(async () => {
   }
 })
 
+// 专用于视频上传的函数，设置3天过期时间
+async function uploadVideoWithExpiry(file, directory) {
+  try {
+    // 获取预签名表单字段，特别指定3天过期时间
+    const res = await request.get('/api/oss/presigned-url', {
+      params: { 
+        fileName: file.name, 
+        directory, 
+        expireSeconds: 259200 // 3天 = 3*24*60*60 = 259200秒
+      },
+    });
+    
+    if (res.code !== 200) {
+      throw new Error(res.message || '获取 OSS 上传凭证失败');
+    }
+    
+    const token = res.data;
+    
+    // 构建FormData，包含所有token字段和文件
+    const formData = new FormData();
+    Object.entries(token).forEach(([key, value]) => {
+      // 排除resourceUrl上传结果字段
+      if (key === 'resourceUrl') return;
+      formData.append(key, value);
+    });
+    formData.append('file', file);
+    
+    // 使用POST表单方式上传到OSS
+    const response = await fetch(token.host || token.uploadUrl, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      console.error('OSS上传失败响应:', response.status, text);
+      throw new Error(`OSS上传失败，状态码：${response.status}`);
+    }
+    
+    // 返回最终资源访问URL
+    return token.resourceUrl;
+  } catch (error) {
+    console.error('视频上传错误:', error);
+    throw error;
+  }
+}
+
 const handleSubmit = async () => {
   // 如果正在加载中，直接返回
   if (loading.value) {
@@ -744,7 +791,8 @@ const handleSubmit = async () => {
     // 如果上传了文件，先上传到 OSS 获取 URL
     if (uploadFile.value) {
       try {
-        const resourceUrl = await uploadFileToOss(uploadFile.value, 'tasks/videos')
+        // 使用专用的带过期时间的视频上传函数
+        const resourceUrl = await uploadVideoWithExpiry(uploadFile.value, 'tasks/videos')
         videoUrl.value = resourceUrl
       } catch (err) {
         ElMessage.error('视频上传失败：' + err.message)

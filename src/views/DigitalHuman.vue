@@ -32,14 +32,23 @@
             <div v-if="item.imageError" class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-dark-card2">
               <PhotoIcon class="w-12 h-12 text-gray-400 dark:text-gray-500" />
             </div>
-            <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <!-- 仅在未播放状态下显示黑色半透明遮罩 -->
+            <div v-if="!item.isPlaying" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <button @click="playVideo(item)" 
                       class="w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-300 transform hover:scale-110">
                 <div class="w-12 h-12 rounded-full bg-white/90 dark:bg-dark-card/90 flex items-center justify-center">
-                  <svg v-if="!item.isPlaying" class="w-6 h-6 text-gray-900 dark:text-gray-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg class="w-6 h-6 text-gray-900 dark:text-gray-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
                   </svg>
-                  <svg v-else class="w-6 h-6 text-gray-900 dark:text-gray-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                </div>
+              </button>
+            </div>
+            <!-- 播放状态下仅显示暂停按钮，无黑色遮罩 -->
+            <div v-else class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button @click="playVideo(item)" 
+                      class="w-14 h-14 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-all duration-300 transform hover:scale-110">
+                <div class="w-10 h-10 rounded-full bg-white/90 dark:bg-dark-card/90 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-gray-900 dark:text-gray-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="currentColor"/>
                   </svg>
                 </div>
@@ -249,11 +258,11 @@ onUnmounted(() => {
 <style scoped>
 /* 视频播放器深色模式 */
 video::-webkit-media-controls {
-  @apply dark:bg-dark-card;
+  @apply bg-transparent dark:bg-transparent;
 }
 
 video::-webkit-media-controls-panel {
-  @apply dark:bg-dark-card2;
+  @apply bg-transparent dark:bg-transparent;
 }
 
 video::-webkit-media-controls-play-button {
