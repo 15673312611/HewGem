@@ -373,7 +373,7 @@ const selectedVoice = ref(null)
 const audioElements = ref({})
 const isPlayingMap = ref({})
 const isComponentMounted = ref(true)
-const speedValue = ref(1.1) // 默认语速值
+const speedValue = ref(1.0) // 默认语速值
 
 const fileInput = ref(null)
 const uploadFile = ref(null)
