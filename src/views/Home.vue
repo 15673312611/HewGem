@@ -100,10 +100,10 @@
              class="bg-white dark:bg-dark-card2 rounded-lg overflow-hidden shadow-sm hover:shadow-md dark:shadow-dark-sm dark:hover:shadow-dark-md transition-all duration-300 group h-[420px] flex flex-col">
           <!-- 视频封面 -->
           <div class="relative h-[240px] bg-gray-100 dark:bg-dark-card3 overflow-hidden">
-            <img v-if="task.status === '1' || task.status === '2' || task.status === '4' || task.status === '5'" :src="getVideoThumbnail(task.videoUrl)" 
-                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300" />
-            <video v-else-if="task.status === '3'" :src="task.resultUrl" 
-                   class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300" />
+            <img v-if="task.status === '3' ? task.resultUrl : task.videoUrl"
+                 :src="getVideoThumbnail(task.status === '3' ? task.resultUrl : task.videoUrl)"
+                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                 @click="task.status === '3' && playVideo(task)" />
             <div v-else class="w-full h-full flex items-center justify-center">
               <el-icon class="text-gray-400 dark:text-gray-500" :size="40">
                 <VideoCamera />
