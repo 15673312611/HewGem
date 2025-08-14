@@ -1334,7 +1334,7 @@ const handleRegister = async () => {
 const fetchSystemConfig = async () => {
   try {
     const response = await axios.get('/api/system-config/public-info')
-    if (response.data && response.data.code === 0) {
+    if (response.data && response.data.code === 200) {
       enableSubsiteFeature.value = response.data.data.enableSubsiteFeature !== false
     }
   } catch (error) {
