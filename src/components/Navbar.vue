@@ -25,14 +25,14 @@
           <span class="font-medium">{{ userInfo.power || 0 }}</span>
         </div>
         
-        <!-- 分站按钮 - 根据用户是否已有分站来显示不同按钮 -->
-        <router-link v-if="isLoggedIn && !hasSubsite" 
-                     to="/subsite-create" 
+        <!-- 分站按钮 - 根据用户是否已有分站来显示不同按钮，同时受系统配置控制 -->
+        <router-link v-if="isLoggedIn && !hasSubsite && enableSubsiteFeature"
+                     to="/subsite-create"
                      @click="handleSubsiteCreate"
                      class="px-5 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:shadow-md hover:from-purple-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
           开通分站
         </router-link>
-        <router-link v-if="isLoggedIn && hasSubsite" to="/subsite-admin" class="px-5 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:shadow-md hover:from-purple-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+        <router-link v-if="isLoggedIn && hasSubsite && enableSubsiteFeature" to="/subsite-admin" class="px-5 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full hover:shadow-md hover:from-purple-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
           分站管理
         </router-link>
         
@@ -830,6 +830,7 @@ const router = useRouter()
 const showAgreement = ref(false)
 const agreedToTerms = ref(false)
 const hasSubsite = ref(false)
+const enableSubsiteFeature = ref(true) // 默认启用分站功能
 const siteStore = useSiteStore()
 const subsiteInfo = computed(() => siteStore.siteInfo)
 const themeStore = useThemeStore()
@@ -1329,10 +1330,24 @@ const handleRegister = async () => {
   }
 };
 
+// 获取系统配置
+const fetchSystemConfig = async () => {
+  try {
+    const response = await axios.get('/api/system-config/public-info')
+    if (response.data && response.data.code === 0) {
+      enableSubsiteFeature.value = response.data.data.enableSubsiteFeature !== false
+    }
+  } catch (error) {
+    console.error('获取系统配置失败:', error)
+    // 如果获取失败，默认启用分站功能
+    enableSubsiteFeature.value = true
+  }
+}
+
 // 检查用户是否已有分站
 const checkUserSubsite = async () => {
   if (!userStore.isLoggedIn) return
-  
+
   try {
     const response = await fetch('/api/subsite/info', {
       headers: {
@@ -1340,7 +1355,7 @@ const checkUserSubsite = async () => {
       }
     })
     const data = await response.json()
-    
+
     if (response.ok && data.code === 0 && data.data) {
       hasSubsite.value = true
     } else {
@@ -1363,13 +1378,16 @@ watch(() => userStore.isLoggedIn, async (newValue) => {
 
 // 组件挂载时检查分站状态
 onMounted(async () => {
+  // 获取系统配置
+  await fetchSystemConfig()
+
   // 获取平台公开信息
   await siteStore.fetchSiteInfo()
-  
+
   if (userStore.isLoggedIn) {
     await checkUserSubsite()
   }
-  
+
   // 监听用户信息更新事件
   window.addEventListener('user-info-updated', async () => {
     if (userStore.isLoggedIn) {

@@ -10,7 +10,7 @@
     <CreationPanel
       :current-voice-name="currentVoiceName"
       :is-generating="isGenerating"
-      :text-content.sync="textContent"
+      v-model:text-content="textContent"
       v-model:speed="speedValue"
       @show-voice-selector="showVoiceSelector = true"
       @ai-create="showAICreation = true"

@@ -8,7 +8,11 @@ const whiteList = [
   '/api/auth/register',
   '/api/auth/refresh',
   '/api/auth/check',
-  '/api/subsite/public-info'
+  '/api/subsite/public-info',
+  '/api/system/config/site_favicon',
+  '/api/system/config/site_name',
+  '/api/system/config/site_logo',
+  '/api/system-config/public-info'
 ]
 
 // 授权秘钥，部署前需要替换为实际的授权秘钥

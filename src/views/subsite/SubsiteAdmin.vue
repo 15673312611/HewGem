@@ -24,11 +24,11 @@
               <div class="flex flex-col space-y-1">
                 <div class="text-sm text-purple-100">您的分站地址:</div>
                 <a 
-                  :href="'https://' + subsiteInfo?.domain + '.cutb.cn'" 
+                  :href="'https://' + subsiteInfo?.domain + '.' + getDomainSuffix()" 
                   target="_blank" 
                   class="text-white font-semibold hover:underline flex items-center group"
                 >
-                  <span class="text-lg">https://{{ subsiteInfo?.domain || '加载中...' }}.cutb.cn</span>
+                  <span class="text-lg">https://{{ subsiteInfo?.domain || '加载中...' }}.{{ getDomainSuffix() }}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform group-hover:translate-x-1 group-hover:translate-y-[-1px] transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
@@ -1020,6 +1020,21 @@ onMounted(async () => {
   await fetchUserList()
   await fetchRechargeRecords()
 })
+
+// 获取域名后缀
+const getDomainSuffix = () => {
+  const hostname = window.location.hostname
+  // 如果当前域名包含点号，说明是子域名，提取主域名
+  if (hostname.includes('.')) {
+    const parts = hostname.split('.')
+    // 取最后两部分作为域名后缀（例如：cutb.cn）
+    if (parts.length >= 2) {
+      return parts.slice(-2).join('.')
+    }
+  }
+  // 如果没有子域名或者无法解析，返回默认值
+  return 'cutb.cn'
+}
 
 // 格式化日期
 const formatDate = (date) => {

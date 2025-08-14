@@ -37,7 +37,7 @@
               </svg>
               AI创作
             </button>
-            <button class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 flex items-center px-3 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" @click="textContent = ''">
+            <button class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 flex items-center px-3 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors" @click="clearText">
               <svg class="w-5 h-5 mr-1.5" viewBox="0 0 24 24" fill="none">
                 <path d="M20 6H4M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6M14 10V17M10 10V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -47,7 +47,8 @@
         </div>
         <div class="relative">
           <textarea 
-            v-model="textContent"
+            :value="textContent"
+            @input="updateTextContent"
             rows="7"
             placeholder="请输入您要合成的文本内容..."
             class="w-full p-6 bg-white dark:bg-dark-card2 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-inner dark:shadow-dark-inner focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 focus:border-blue-400 dark:focus:border-blue-700 transition-[border-color,box-shadow] outline-none resize-none text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 font-medium text-lg"
@@ -122,15 +123,26 @@ const props = defineProps({
   currentVoiceName: String,
   isGenerating: Boolean,
   speed: Number,
+  textContent: {
+    type: String,
+    default: ''
+  }
 })
 
-const emit = defineEmits(['show-voice-selector', 'ai-create', 'generate', 'update:speed'])
+const emit = defineEmits(['show-voice-selector', 'ai-create', 'generate', 'update:speed', 'update:textContent'])
 
-const textContent = ref('')
 const fileName = ref('')
 
+const updateTextContent = (event) => {
+  emit('update:textContent', event.target.value)
+}
+
+const clearText = () => {
+  emit('update:textContent', '')
+}
+
 const generate = () => {
-  if (!textContent.value.trim()) {
+  if (!props.textContent.trim()) {
     ElMessage({ message: '请输入要合成的文本内容', type: 'warning', customClass: 'custom-message' })
     return
   }
@@ -139,7 +151,7 @@ const generate = () => {
     return
   }
   emit('generate', {
-    textContent: textContent.value,
+    textContent: props.textContent,
     fileName: fileName.value,
   })
 }
