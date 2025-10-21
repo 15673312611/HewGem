@@ -70,7 +70,41 @@ const normalizeReferenceDate = () => dayjs().toISOString()
 
       <!-- 聊天区 -->
       <div ref="chatContainer" class="flex-1 overflow-y-auto custom-scrollbar px-8 py-8 bg-white dark:bg-dark-bg">
-        <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-full gap-6 text-slate-400 dark:text-slate-500">
+        <!-- 未配置 API Key 提示 -->
+        <div v-if="!apiKey && messages.length === 0" class="flex flex-col items-center justify-center h-full gap-6">
+          <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg">
+            <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+          </div>
+          <div class="text-center max-w-md">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-2">需要配置 API Key</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">请先配置 DeepSeek API Key 以开始使用 AI 文案创作功能</p>
+            <div class="flex items-center justify-center gap-3">
+              <button
+                @click="showApiKeyModal = true"
+                class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+                配置 API Key
+            </button>
+              <a 
+                href="https://platform.deepseek.com/api_keys" 
+                target="_blank"
+                class="px-5 py-2.5 bg-white dark:bg-dark-card2 border border-slate-200 dark:border-dark-border text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:shadow-md hover:scale-105 transition-all flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                获取 API Key
+              </a>
+          </div>
+          </div>
+        </div>
+        <!-- 已配置 API Key，空对话状态 -->
+        <div v-else-if="apiKey && messages.length === 0" class="flex flex-col items-center justify-center h-full gap-6 text-slate-400 dark:text-slate-500">
           <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-white flex items-center justify-center text-2xl font-bold shadow-lg">
             AI
                 </div>
@@ -1404,7 +1438,7 @@ const saveRole = async () => {
           id: editingRoleId.value  // 保持负ID，后端识别为修改默认角色
         }
         result = await request.post('/api/ai/roles', saveData)
-      } else {
+  } else {
         // 编辑用户角色 → 直接更新
         result = await request.put(`/api/ai/roles/${editingRoleId.value}`, roleForm.value)
       }
@@ -1526,6 +1560,15 @@ const saveApiKey = () => {
 }
 
 const createNewConversation = () => {
+  // 如果当前已经是新对话（没有消息），提示用户
+  if (messages.value.length === 0 && !currentConversationId.value) {
+    ElMessage.info({
+      message: '当前已经是新对话，直接输入文本开始创作吧！',
+      duration: 2000
+    })
+    return
+  }
+  
   currentConversationId.value = null
   messages.value = []
   selectedRole.value = null  // 清除选择的角色
