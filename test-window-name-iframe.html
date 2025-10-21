@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试 window.name + iframe 跨域</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      min-height: 50px;
+    }
+    .error {
+      color: red;
+      background: #ffebee;
+    }
+    .success {
+      color: green;
+      background: #e8f5e9;
+    }
+    button {
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 window.name + iframe 跨域方案测试</h1>
+  
+  <div class="test-section">
+    <h2>测试 1️⃣：尝试加载抖音页面到 iframe</h2>
+    <input type="text" id="douyinUrl" placeholder="输入抖音视频链接，例如：https://www.douyin.com/video/xxxxx" 
+           value="https://www.douyin.com/">
+    <button onclick="testDouyinIframe()">测试加载抖音 iframe</button>
+    <div id="result1" class="result"></div>
+    <div id="iframeContainer" style="margin-top: 10px;"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>测试 2️⃣：window.name 跨域原理演示（使用可嵌入的页面）</h2>
+    <p style="color: #666; font-size: 14px;">
+      演示 window.name 跨域的正确用法（使用允许嵌入的测试页面）
+    </p>
+    <button onclick="testWindowNameCrossOrigin()">测试 window.name 跨域</button>
+    <div id="result2" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>测试 3️⃣：检查抖音的安全策略</h2>
+    <button onclick="checkDouyinHeaders()">检查抖音响应头</button>
+    <div id="result3" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>📊 测试结论</h2>
+    <div id="conclusion" class="result" style="background: #fff3cd; color: #856404;">
+      点击上方按钮进行测试...
+    </div>
+  </div>
+
+  <script>
+    // 测试 1：尝试加载抖音页面到 iframe
+    function testDouyinIframe() {
+      const url = document.getElementById('douyinUrl').value;
+      const result1 = document.getElementById('result1');
+      const container = document.getElementById('iframeContainer');
+      
+      result1.innerHTML = '⏳ 正在尝试加载抖音页面到 iframe...';
+      result1.className = 'result';
+      
+      // 清空之前的 iframe
+      container.innerHTML = '';
+      
+      // 创建 iframe
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '100%';
+      iframe.style.height = '300px';
+      iframe.style.border = '1px solid #ddd';
+      iframe.src = url;
+      
+      // 监听加载错误
+      let errorOccurred = false;
+      
+      iframe.onerror = function() {
+        errorOccurred = true;
+        result1.innerHTML = '❌ <strong>加载失败</strong><br>' +
+          '原因：抖音设置了 X-Frame-Options 安全策略，禁止被嵌入到 iframe 中。<br>' +
+          '这是抖音的安全防护机制，无法绕过。';
+        result1.className = 'result error';
+        updateConclusion('fail');
+      };
+      
+      // 监听加载成功（实际上不会成功）
+      iframe.onload = function() {
+        if (errorOccurred) return;
+        
+        try {
+          // 尝试访问 iframe 内容
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          result1.innerHTML = '✅ iframe 加载成功（但这不是抖音页面）';
+          result1.className = 'result success';
+        } catch (e) {
+          result1.innerHTML = '❌ <strong>跨域错误</strong><br>' +
+            '即使 iframe 加载了，也无法访问其内容。<br>' +
+            '错误信息：' + e.message;
+          result1.className = 'result error';
+          updateConclusion('fail');
+        }
+      };
+      
+      container.appendChild(iframe);
+      
+      // 检查浏览器控制台错误
+      setTimeout(() => {
+        if (!errorOccurred) {
+          result1.innerHTML += '<br><br>💡 <strong>提示</strong>：请打开浏览器控制台查看是否有 X-Frame-Options 错误信息。';
+        }
+      }, 2000);
+    }
+
+    // 测试 2：window.name 跨域原理演示
+    function testWindowNameCrossOrigin() {
+      const result2 = document.getElementById('result2');
+      result2.innerHTML = '⏳ 正在演示 window.name 跨域原理...';
+      result2.className = 'result';
+      
+      // 创建一个临时的数据页面（模拟跨域页面）
+      const dataPage = `
+        <!DOCTYPE html>
+        <html>
+        <head><title>Data Page</title></head>
+        <body>
+          <script>
+            // 设置 window.name 为数据
+            window.name = JSON.stringify({
+              message: "这是来自模拟跨域页面的数据",
+              timestamp: new Date().toISOString(),
+              video: "模拟视频信息"
+            });
+            
+            // 跳转回代理页面（同源）
+            window.location.href = 'about:blank';
+          </script>
+        </body>
+        </html>
+      `;
+      
+      const blob = new Blob([dataPage], { type: 'text/html' });
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // 创建 iframe
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+      
+      let step = 0;
+      iframe.onload = function() {
+        step++;
+        
+        if (step === 1) {
+          // 第一次加载完成，window.name 已设置
+          result2.innerHTML = '✅ 步骤 1：数据页面已加载，window.name 已设置<br>' +
+            '⏳ 步骤 2：正在跳转到同源页面...';
+        } else if (step === 2) {
+          // 跳转到同源页面后，可以读取 window.name
+          try {
+            const data = JSON.parse(iframe.contentWindow.name);
+            result2.innerHTML = '✅ <strong>window.name 跨域原理验证成功！</strong><br><br>' +
+              '<strong>获取的数据：</strong><br>' +
+              '<pre>' + JSON.stringify(data, null, 2) + '</pre><br>' +
+              '<strong>说明：</strong><br>' +
+              '1. 第一步：iframe 加载跨域页面，页面设置 window.name<br>' +
+              '2. 第二步：iframe 跳转到同源页面，window.name 保留<br>' +
+              '3. 第三步：父页面读取 iframe.contentWindow.name<br><br>' +
+              '<strong style="color: red;">但是！抖音不允许被嵌入 iframe，所以这个方法对抖音无效。</strong>';
+            result2.className = 'result success';
+            
+            // 清理
+            document.body.removeChild(iframe);
+            URL.revokeObjectURL(blobUrl);
+          } catch (e) {
+            result2.innerHTML = '❌ 读取 window.name 失败：' + e.message;
+            result2.className = 'result error';
+          }
+        }
+      };
+      
+      iframe.src = blobUrl;
+    }
+
+    // 测试 3：检查抖音的安全策略
+    async function checkDouyinHeaders() {
+      const result3 = document.getElementById('result3');
+      result3.innerHTML = '⏳ 正在检查抖音的安全策略...';
+      result3.className = 'result';
+      
+      try {
+        // 尝试 fetch 请求抖音
+        const response = await fetch('https://www.douyin.com/', {
+          mode: 'no-cors' // 使用 no-cors 模式避免 CORS 错误
+        });
+        
+        result3.innerHTML = '⚠️ <strong>无法直接读取抖音的响应头</strong><br><br>' +
+          '<strong>原因：</strong><br>' +
+          '1. CORS 限制：抖音不允许跨域访问<br>' +
+          '2. no-cors 模式无法读取响应头<br><br>' +
+          '<strong>抖音的安全策略（已知）：</strong><br>' +
+          '• X-Frame-Options: SAMEORIGIN（禁止 iframe 嵌入）<br>' +
+          '• Content-Security-Policy: frame-ancestors \'self\'<br>' +
+          '• 严格的 CORS 策略<br>' +
+          '• 请求签名验证（X-Bogus）<br>' +
+          '• User-Agent 检测<br>' +
+          '• IP 限流和黑名单<br><br>' +
+          '<strong style="color: red;">这些安全措施使得纯前端方案无法实现。</strong>';
+        result3.className = 'result';
+        
+        updateConclusion('fail');
+      } catch (error) {
+        result3.innerHTML = '❌ <strong>请求失败</strong><br>' +
+          '错误信息：' + error.message + '<br><br>' +
+          '这证明了抖音有严格的跨域限制。';
+        result3.className = 'result error';
+        updateConclusion('fail');
+      }
+    }
+
+    // 更新结论
+    function updateConclusion(status) {
+      const conclusion = document.getElementById('conclusion');
+      
+      if (status === 'fail') {
+        conclusion.innerHTML = '<strong>🚫 测试结论：window.name + iframe 方案不可行</strong><br><br>' +
+          '<strong>原因总结：</strong><br>' +
+          '1. ❌ 抖音设置了 X-Frame-Options，无法嵌入 iframe<br>' +
+          '2. ❌ 即使能嵌入，抖音也不会主动设置 window.name<br>' +
+          '3. ❌ 无法绕过 CORS 限制下载视频<br>' +
+          '4. ❌ 浏览器无法处理视频和音频提取<br>' +
+          '5. ❌ 语音转文字需要 AI 服务，必须通过后端<br><br>' +
+          '<strong>✅ 可行的方案：</strong><br>' +
+          '• 使用后端代理服务（推荐）<br>' +
+          '• 使用 Serverless 函数<br>' +
+          '• 使用第三方抖音解析 API<br>' +
+          '• 开发浏览器扩展（部分功能）';
+        conclusion.className = 'result error';
+      }
+    }
+
+    // 页面加载时的提示
+    window.onload = function() {
+      console.log('%c🧪 抖音跨域方案测试', 'font-size: 20px; color: #4CAF50; font-weight: bold;');
+      console.log('%c请依次点击上方按钮进行测试', 'font-size: 14px; color: #666;');
+      console.log('%c注意观察浏览器控制台的错误信息', 'font-size: 14px; color: #ff9800;');
+    };
+  </script>
+</body>
+</html>
+

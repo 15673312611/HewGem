@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="340" height="120" viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 渐变定义 -->
+    <linearGradient id="crocodileGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2E8B57;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#228B22;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#006400;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1B4332;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E8B57;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="teethGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F0F0F0;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 数字化光晕效果 -->
+    <filter id="digitalGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 阴影效果 -->
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景装饰 -->
+  <ellipse cx="50" cy="45" rx="45" ry="35" fill="url(#crocodileGradient)" opacity="0.1" filter="url(#digitalGlow)"/>
+  
+  <!-- 鳄鱼主体 -->
+  <g transform="translate(10, 25)" filter="url(#dropShadow)">
+    <!-- 鳄鱼身体 -->
+    <ellipse cx="40" cy="30" rx="35" ry="15" fill="url(#crocodileGradient)"/>
+    
+    <!-- 鳄鱼头部 -->
+    <ellipse cx="15" cy="25" rx="20" ry="12" fill="url(#crocodileGradient)"/>
+    
+    <!-- 鳄鱼嘴部（上颚） -->
+    <path d="M 5 25 Q -10 20 -15 25 Q -10 30 5 30 Z" fill="url(#crocodileGradient)"/>
+    
+    <!-- 鳄鱼嘴部（下颚） -->
+    <path d="M 5 30 Q -10 32 -15 30 Q -10 35 5 35 Z" fill="url(#crocodileGradient)" opacity="0.9"/>
+    
+    <!-- 牙齿 -->
+    <polygon points="-8,25 -6,22 -4,25" fill="url(#teethGradient)"/>
+    <polygon points="-12,26 -10,23 -8,26" fill="url(#teethGradient)"/>
+    <polygon points="-4,26 -2,23 0,26" fill="url(#teethGradient)"/>
+    
+    <polygon points="-8,30 -6,33 -4,30" fill="url(#teethGradient)"/>
+    <polygon points="-12,29 -10,32 -8,29" fill="url(#teethGradient)"/>
+    <polygon points="-4,29 -2,32 0,29" fill="url(#teethGradient)"/>
+    
+    <!-- 鳄鱼眼睛 -->
+    <ellipse cx="20" cy="18" rx="4" ry="3" fill="url(#eyeGradient)"/>
+    <ellipse cx="25" cy="18" rx="4" ry="3" fill="url(#eyeGradient)"/>
+    
+    <!-- 瞳孔 -->
+    <ellipse cx="20" cy="18" rx="2" ry="1.5" fill="#000000">
+      <animate attributeName="ry" values="1.5;0.5;1.5" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="25" cy="18" rx="2" ry="1.5" fill="#000000">
+      <animate attributeName="ry" values="1.5;0.5;1.5" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+    
+    <!-- 眼部高光 -->
+    <circle cx="21" cy="17" r="1" fill="#FFFFFF" opacity="0.8"/>
+    <circle cx="26" cy="17" r="1" fill="#FFFFFF" opacity="0.8"/>
+    
+    <!-- 鼻孔 -->
+    <ellipse cx="8" cy="22" rx="1.5" ry="1" fill="#1B4332"/>
+    <ellipse cx="8" cy="25" rx="1.5" ry="1" fill="#1B4332"/>
+    
+    <!-- 鳞片纹理 -->
+    <g opacity="0.3">
+      <circle cx="25" cy="25" r="2" fill="none" stroke="#1B4332" stroke-width="0.5"/>
+      <circle cx="30" cy="28" r="2" fill="none" stroke="#1B4332" stroke-width="0.5"/>
+      <circle cx="35" cy="25" r="2" fill="none" stroke="#1B4332" stroke-width="0.5"/>
+      <circle cx="40" cy="30" r="2" fill="none" stroke="#1B4332" stroke-width="0.5"/>
+      <circle cx="45" cy="27" r="2" fill="none" stroke="#1B4332" stroke-width="0.5"/>
+    </g>
+    
+    <!-- 尾巴 -->
+    <path d="M 70 30 Q 85 25 90 35 Q 85 40 75 38" fill="url(#crocodileGradient)"/>
+    
+    <!-- 腿部 -->
+    <ellipse cx="20" cy="40" rx="4" ry="8" fill="url(#crocodileGradient)"/>
+    <ellipse cx="35" cy="42" rx="4" ry="8" fill="url(#crocodileGradient)"/>
+    <ellipse cx="50" cy="42" rx="4" ry="8" fill="url(#crocodileGradient)"/>
+    <ellipse cx="65" cy="40" rx="4" ry="8" fill="url(#crocodileGradient)"/>
+  </g>
+  
+  <!-- 数字化效果 -->
+  <g opacity="0.7">
+    <!-- 数据粒子 -->
+    <circle cx="95" cy="20" r="2" fill="#2E8B57">
+      <animate attributeName="cy" values="20;10;20" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="105" cy="35" r="1.5" fill="#228B22">
+      <animate attributeName="cy" values="35;25;35" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="50" r="2.5" fill="#006400">
+      <animate attributeName="cy" values="50;40;50" dur="2.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="2.8s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- 连接线 -->
+    <path d="M 95 20 Q 100 30 105 35 Q 102 42 100 50" stroke="#228B22" stroke-width="1.5" opacity="0.5" fill="none" stroke-dasharray="4,4">
+      <animate attributeName="stroke-dashoffset" values="0;16" dur="3s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- 主标题：鳄鱼数字人 -->
+  <text x="120" y="40" font-family="'Microsoft YaHei', 'PingFang SC', sans-serif" font-size="26" font-weight="bold" fill="url(#textGradient)">
+    鳄鱼数字人
+  </text>
+  
+  <!-- 英文副标题 -->
+  <text x="120" y="60" font-family="'Arial', sans-serif" font-size="13" font-weight="normal" fill="#52796F">
+    Crocodile Digital Human
+  </text>
+  
+  <!-- 装饰性代码元素 -->
+  <g opacity="0.4">
+    <text x="120" y="78" font-family="'Consolas', 'Courier New', monospace" font-size="9" fill="#74A57F">
+      &lt;/&gt; croc.ai.system
+    </text>
+  </g>
+  
+  <!-- 底部装饰线 -->
+  <line x1="120" y1="88" x2="320" y2="88" stroke="url(#crocodileGradient)" stroke-width="2" opacity="0.6"/>
+  
+  <!-- 科技装饰元素 -->
+  <g opacity="0.6">
+    <!-- 数据条 -->
+    <rect x="290" y="25" width="25" height="3" fill="#2E8B57" rx="1.5">
+      <animate attributeName="width" values="25;35;25" dur="2.2s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="290" y="32" width="30" height="3" fill="#228B22" rx="1.5">
+      <animate attributeName="width" values="30;40;30" dur="2.5s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="290" y="39" width="28" height="3" fill="#006400" rx="1.5">
+      <animate attributeName="width" values="28;38;28" dur="2.8s" repeatCount="indefinite"/>
+    </rect>
+    
+    <!-- 状态指示灯 -->
+    <circle cx="325" cy="26" r="1.5" fill="#2E8B57">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="325" cy="33" r="1.5" fill="#228B22">
+      <animate attributeName="opacity" values="1;0.3;1" dur="2.1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="325" cy="40" r="1.5" fill="#006400">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- 水波纹效果 -->
+  <g transform="translate(85, 65)" opacity="0.3">
+    <ellipse cx="0" cy="0" rx="15" ry="3" fill="none" stroke="#2E8B57" stroke-width="1">
+      <animate attributeName="rx" values="15;25;15" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="0" cy="0" rx="20" ry="4" fill="none" stroke="#228B22" stroke-width="1">
+      <animate attributeName="rx" values="20;30;20" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3.5s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+  
+  <!-- 数字化网格 -->
+  <g opacity="0.2">
+    <defs>
+      <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+        <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#2E8B57" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect x="110" y="15" width="50" height="30" fill="url(#grid)"/>
+  </g>
+</svg>
