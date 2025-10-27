@@ -6,6 +6,7 @@ ai数字人商用系统
 - 口播数字人合成 文本合成和音频合成
 - 形象市场 用户自由挑选
 - 声音克隆功能
+- 文案生成功能 支持添加参考文案库
 - 邀请功能
 - 分站功能
 - ...
@@ -27,6 +28,9 @@ ai数字人商用系统
 ![image](https://github.com/user-attachments/assets/a6d0806b-1380-439a-b8a6-7e6324e5e3cc)
 ![image](https://github.com/user-attachments/assets/6240b67a-47a9-44a4-bddf-2c113b5f825f)
 ![image](https://github.com/user-attachments/assets/27871818-d56a-42d7-a8a9-b42ae09177f6)
+<img width="1745" height="1123" alt="image" src="https://github.com/user-attachments/assets/ad260368-4e10-4d84-af05-f5a78dfe4f45" />
+<img width="2020" height="1229" alt="image" src="https://github.com/user-attachments/assets/326101d3-b17a-47d5-b138-13c3066a065c" />
+
 
 ## 💰 搭建服务
 联系微信: **soe303** (备注git)
